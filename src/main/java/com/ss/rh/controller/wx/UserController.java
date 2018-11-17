@@ -37,6 +37,7 @@ public class UserController {
         return userService.updateUser(user);
     }
 
+
     /*
     删除用户信息
      */
@@ -51,5 +52,4 @@ public class UserController {
 //    @ResponseBody()
 //    @RequestMapping(method = RequestMethod.POST, value = "/login")
 //    public String
-
 }
