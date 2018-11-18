@@ -4,14 +4,17 @@ import com.ss.rh.entity.Order;
 import com.ss.rh.entity.User;
 import com.ss.rh.service.OrderService;
 import com.ss.rh.util.AuthUtil;
-import com.ss.rh.util.MyMsg;
+import com.ss.rh.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
+@RestController
 public class OrderController {
 
     @Autowired
@@ -29,12 +32,14 @@ public class OrderController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/repairation")
-    public MyMsg getOrder(HttpSession session) {
+    public String getOrder(@RequestParam int id, HttpSession session) {
         User user = (User) session.getAttribute("user");
+        Order order = orderService.getOrderById(id);
 
-//        if(user.getAuthority() == AuthUtil.ORDINARY)
-//            return new MyMsg(false, "权限不足！");
+        if(user.getAuthority() == AuthUtil.ORDINARY && !order.getUserId().equals(user.getId()))
+            return JsonUtil.failure("权限不足！");
 
-        return new MyMsg(false, "权限不足！");
+        return JsonUtil.success("查询成功", order);
+
     }
 }

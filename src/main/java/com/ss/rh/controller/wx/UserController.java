@@ -5,6 +5,8 @@ import com.ss.rh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+
 @RestController
 public class UserController {
 
@@ -33,7 +35,10 @@ public class UserController {
     修改用户信息
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/userInfo")
-    public boolean modifyUserInfo(User user) {
+    public boolean modifyUserInfo(User user, HttpSession session) {
+        if (session.getAttribute("user") == null)
+            return false;
+
         return userService.updateUser(user);
     }
 
@@ -41,10 +46,10 @@ public class UserController {
     /*
     删除用户信息
      */
-    @RequestMapping(method = RequestMethod.DELETE, value = "/userInfo")
-    public boolean deleteUserInfo(@RequestParam int id) {
-        return userService.deleteUserById(id);
-    }
+//    @RequestMapping(method = RequestMethod.DELETE, value = "/userInfo")
+//    public boolean deleteUserInfo(@RequestParam int id) {
+//        return userService.deleteUserById(id);
+//    }
 
     /*
     登录
