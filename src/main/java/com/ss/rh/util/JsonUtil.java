@@ -12,11 +12,11 @@ public class JsonUtil {
         return json.toJSONString();
     }
 
-    public static String success(String msg, Object object) {
+    public static String success(String msg, Object rs) {
         JSONObject json = new JSONObject();
         json.put("success", true);
         json.put("msg", msg);
-        json.put("rs", object);
+        json.put("rs", rs);
 
         return json.toJSONString();
     }
