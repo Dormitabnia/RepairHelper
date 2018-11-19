@@ -45,7 +45,6 @@ public class UserController {
         return userService.updateUser(user);
     }
 
-
     /*
     删除用户信息
      */
