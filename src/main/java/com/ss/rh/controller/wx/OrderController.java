@@ -1,5 +1,6 @@
 package com.ss.rh.controller.wx;
 
+import com.ss.rh.annotation.LoginRequired;
 import com.ss.rh.entity.Order;
 import com.ss.rh.entity.User;
 import com.ss.rh.service.OrderService;
@@ -20,6 +21,7 @@ public class OrderController {
     @Autowired
     OrderService orderService;
 
+    @LoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/repairationList")
     public List<Order> getOrderList(HttpSession session) {
         User user = (User) session.getAttribute("user");
@@ -31,6 +33,7 @@ public class OrderController {
         return orderService.getOrderListByUid(uid);
     }
 
+    @LoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/repairation")
     public String getOrder(@RequestParam int id, HttpSession session) {
         User user = (User) session.getAttribute("user");

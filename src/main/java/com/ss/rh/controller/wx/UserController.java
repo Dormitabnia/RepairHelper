@@ -1,5 +1,6 @@
 package com.ss.rh.controller.wx;
 
+import com.ss.rh.annotation.LoginRequired;
 import com.ss.rh.entity.User;
 import com.ss.rh.service.UserService;
 import com.ss.rh.util.JsonUtil;
@@ -35,6 +36,7 @@ public class UserController {
     /*
     修改用户信息
      */
+    @LoginRequired
     @RequestMapping(method = RequestMethod.PUT, value = "/userInfo")
     public boolean modifyUserInfo(@RequestBody User user, HttpSession session) {
         if (session.getAttribute("user") == null)
