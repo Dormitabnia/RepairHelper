@@ -5,9 +5,11 @@ import com.ss.rh.entity.Order;
 import com.ss.rh.entity.OrderExample;
 import com.ss.rh.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
