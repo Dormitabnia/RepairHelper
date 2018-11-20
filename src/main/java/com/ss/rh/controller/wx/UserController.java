@@ -22,9 +22,9 @@ public class UserController {
     public User getUserInfo(@RequestParam("id") int id) { return userService.getUserById(id); }
 
     /*
-    新增用户（注册）
+    新增用户
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/user")
+    @RequestMapping(method = RequestMethod.POST, value = "/userInfo")
     public String addUser(@RequestBody User user) {
         boolean flag = false;
 
@@ -53,10 +53,4 @@ public class UserController {
 //        return userService.deleteUserById(id);
 //    }
 
-    /*
-    登录
-     */
-//    @ResponseBody()
-//    @RequestMapping(method = RequestMethod.POST, value = "/login")
-//    public String
 }

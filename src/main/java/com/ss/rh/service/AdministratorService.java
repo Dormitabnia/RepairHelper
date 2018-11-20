@@ -4,9 +4,9 @@ import com.ss.rh.entity.Administrator;
 
 public interface AdministratorService {
 
-    public Administrator getAdministratorById(int id);
+    Administrator getAdministratorById(int id);
 
-    public boolean insertAdministrator(Administrator administrator);
+    boolean insertAdministrator(Administrator administrator);
 
-    public boolean updateAdministrator(Administrator administrator);
+    boolean updateAdministrator(Administrator administrator);
 }

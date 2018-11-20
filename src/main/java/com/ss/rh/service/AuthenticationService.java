@@ -4,7 +4,9 @@ import com.ss.rh.entity.Authentication;
 
 public interface AuthenticationService {
 
-    public Authentication getAuthByUserId(int uid);
+    Authentication getAuthByUserId(int uid);
 
-    public boolean insertAuth(Authentication authentication);
+    boolean insertAuth(Authentication authentication);
+
+    Authentication getUserIdByAccessToken(String tk);
 }
