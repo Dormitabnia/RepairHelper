@@ -11,7 +11,6 @@ import com.ss.rh.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
@@ -43,8 +42,8 @@ public class OrderController {
      */
     @LoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/repairation")
-    public String getOrder(@RequestParam("id") int id, HttpSession session) {
-        User user = (User) session.getAttribute("user");
+    public String getOrder(@RequestParam("id") int id, @RequestAttribute("userId") int userId) {
+        User user = userService.getUserById(userId);
         Order order = orderService.getOrderById(id);
 
         if (user.getAuthority() == AuthUtil.ORDINARY && !order.getUserId().equals(user.getId()))
