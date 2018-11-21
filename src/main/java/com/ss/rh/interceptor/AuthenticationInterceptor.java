@@ -28,7 +28,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
-        PrintWriter pw = response.getWriter();
 
         HandlerMethod handlerMethod = (HandlerMethod)handler;
         Method method = handlerMethod.getMethod();
@@ -38,6 +37,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         // 不是LoginRequired标注的方法直接通过
         if (methodAnnotation == null)
             return true;
+
+        PrintWriter pw = response.getWriter();
 
         String token = request.getHeader("token");
         if (token == null) {
