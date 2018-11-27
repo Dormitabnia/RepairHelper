@@ -32,7 +32,7 @@ public class UserController {
         if (code.isEmpty())
             return JsonUtil.failure("code为空，用户未授权");
 
-        // 通过code获取access_token
+        // TODO:通过code获取access_token
         Map<String,Object> params = new HashMap<>();
         params.put("appid", Constants.mpAppId);
         params.put("secret", Constants.mpSecret);
@@ -40,9 +40,9 @@ public class UserController {
         params.put("grant_type", "authorization_code");
 //        String AccessTokenresponse = HttpU.get(Constants.accessTokenUrl,params);
 //        PrintUtil.println("accessTokenResponse : " + AccessTokenresponse);
-//        Map<String,Object> map = JsonUtil.json2Map(AccessTokenresponse);
+//        Map<String, Object> map = JsonUtil.json2Map(AccessTokenresponse);
 
-        // TODO:获取微信认证信息 直接从前端获取，创建微信认证实体？
+        // TODO:将用户信息存入redis以及mysql
 
         return JsonUtil.success("用户创建成功");
     }
