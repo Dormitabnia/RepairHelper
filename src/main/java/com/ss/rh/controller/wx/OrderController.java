@@ -1,12 +1,12 @@
 package com.ss.rh.controller.wx;
 
 import com.ss.rh.annotation.LoginRequired;
+import com.ss.rh.constants.Constants;
 import com.ss.rh.entity.Order;
 import com.ss.rh.entity.OrderPost;
 import com.ss.rh.entity.User;
 import com.ss.rh.service.OrderService;
 import com.ss.rh.service.UserService;
-import com.ss.rh.util.AuthUtil;
 import com.ss.rh.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ public class OrderController {
         User user = userService.getUserById(userId);
         int uid = 0;
 
-        if (user.getAuthority() == AuthUtil.ORDINARY)
+        if (user.getAuthority() == Constants.ORDINARY)
             uid = userId;
 
         return orderService.getOrderListByUid(uid);
@@ -46,7 +46,7 @@ public class OrderController {
         User user = userService.getUserById(userId);
         Order order = orderService.getOrderById(id);
 
-        if (user.getAuthority() == AuthUtil.ORDINARY && !order.getUserId().equals(user.getId()))
+        if (user.getAuthority() == Constants.ORDINARY && !order.getUserId().equals(user.getId()))
             return JsonUtil.failure("权限不足！");
 
         return JsonUtil.success("查询成功", order);
@@ -97,10 +97,10 @@ public class OrderController {
     private static boolean hasRight(String status, int auth) {
         boolean flag = false;
 
-        if (status.equals("报修确认") && auth <= AuthUtil.ORDERER) {
+        if (status.equals("报修确认") && auth <= Constants.ORDERER) {
             flag = true;
         }
-        else if ((status.equals("维修处理") || status.equals("处理完毕")) && auth <= AuthUtil.REPAIRER) {
+        else if ((status.equals("维修处理") || status.equals("处理完毕")) && auth <= Constants.REPAIRER) {
             flag = true;
         }
 

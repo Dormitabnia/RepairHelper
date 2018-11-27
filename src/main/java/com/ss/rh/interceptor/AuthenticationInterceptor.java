@@ -13,7 +13,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 
@@ -49,7 +48,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             pw.write(JsonUtil.failure("无token，请先登录", 401));
         }
         else {
-            //进行token验证
+            //进行token验证 TODO:改为在redis中查找
             Authentication auth = authenticationService.getUserIdByAccessToken(token);
             if (auth == null)
                 pw.write(JsonUtil.failure("找不到该用户"));

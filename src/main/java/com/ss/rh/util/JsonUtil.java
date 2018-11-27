@@ -2,6 +2,8 @@ package com.ss.rh.util;
 
 import com.alibaba.fastjson.JSONObject;
 
+import java.util.Map;
+
 public class JsonUtil {
 
     public static String success(String msg) {
@@ -39,5 +41,9 @@ public class JsonUtil {
         json.put("msg", msg);
 
         return json.toJSONString();
+    }
+
+    public static Map json2Map(String json) {
+        return JSONObject.parseObject(json, Map.class);
     }
 }
