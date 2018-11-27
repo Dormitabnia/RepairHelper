@@ -4,11 +4,11 @@ import com.ss.rh.annotation.LoginRequired;
 import com.ss.rh.constants.Constants;
 import com.ss.rh.entity.User;
 import com.ss.rh.service.UserService;
+import com.ss.rh.util.HttpUtil;
 import com.ss.rh.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +22,14 @@ public class UserController {
     获取用户信息
      */
     @RequestMapping(method = RequestMethod.GET, value = "/userInfo")
-    public User getUserInfo(@RequestParam("id") int id) { return userService.getUserById(id); }
+    public String getUserInfo(@RequestParam("id") int id) {
+        User user = userService.getUserById(id);
+
+        if (user == null)
+            return JsonUtil.failure("无法找到该用户", 404);
+
+        return JsonUtil.success("查询成功", user);
+    }
 
     /*
     新增用户
@@ -32,15 +39,16 @@ public class UserController {
         if (code.isEmpty())
             return JsonUtil.failure("code为空，用户未授权");
 
-        // TODO:通过code获取access_token
+        //通过code获取access_token
         Map<String,Object> params = new HashMap<>();
         params.put("appid", Constants.mpAppId);
         params.put("secret", Constants.mpSecret);
         params.put("code", code);
         params.put("grant_type", "authorization_code");
-//        String AccessTokenresponse = HttpU.get(Constants.accessTokenUrl,params);
-//        PrintUtil.println("accessTokenResponse : " + AccessTokenresponse);
-//        Map<String, Object> map = JsonUtil.json2Map(AccessTokenresponse);
+        String accessTokenResponse = HttpUtil.get(Constants.accessTokenUrl, params);
+
+        System.out.println("accessTokenResponse : " + accessTokenResponse);
+        Map<String, Object> map = JsonUtil.json2Map(accessTokenResponse);
 
         // TODO:将用户信息存入redis以及mysql
 
@@ -52,11 +60,13 @@ public class UserController {
      */
     @LoginRequired
     @RequestMapping(method = RequestMethod.PUT, value = "/userInfo")
-    public boolean modifyUserInfo(@RequestBody User user, HttpSession session) {
-        if (session.getAttribute("user") == null)
-            return false;
+    public String modifyUserInfo(@RequestBody User user) {
+        boolean flag = userService.updateUser(user);
 
-        return userService.updateUser(user);
+        if (!flag)
+            return JsonUtil.failure("修改失败", 500);
+
+        return JsonUtil.success("修改成功");
     }
 
     /*
