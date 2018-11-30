@@ -1,15 +1,15 @@
 package com.ss.rh.controller.wx;
 
 import com.ss.rh.annotation.LoginRequired;
-import com.ss.rh.constants.Constants;
+import com.ss.rh.entity.Authentication;
 import com.ss.rh.entity.User;
 import com.ss.rh.service.UserService;
-import com.ss.rh.util.HttpUtil;
 import com.ss.rh.util.JsonUtil;
+import com.ss.rh.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 @RestController
@@ -32,27 +32,49 @@ public class UserController {
     }
 
     /*
+    用户登录
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/login")
+    public String login(@RequestParam("code") String code) {
+        if (code.isEmpty())
+            return JsonUtil.failure("code为空，用户未授权");
+
+        //通过code获取用户session
+        Map map = TokenUtil.getSessionByJsCode(code);
+
+        return null;
+    }
+
+    /*
     新增用户
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/userInfo")
+    @RequestMapping(method = RequestMethod.POST, value = "/auth")
     public String addUser(@RequestParam("code") String code) {
         if (code.isEmpty())
             return JsonUtil.failure("code为空，用户未授权");
 
-        //通过code获取access_token
-        Map<String,Object> params = new HashMap<>();
-        params.put("appid", Constants.mpAppId);
-        params.put("secret", Constants.mpSecret);
-        params.put("code", code);
-        params.put("grant_type", "authorization_code");
-        String accessTokenResponse = HttpUtil.get(Constants.accessTokenUrl, params);
+        //通过code获取用户session
+        Map map = TokenUtil.getSessionByJsCode(code);
 
-        System.out.println("accessTokenResponse : " + accessTokenResponse);
-        Map<String, Object> map = JsonUtil.json2Map(accessTokenResponse);
+        // TODO:将用户session存入redis以及mysql
+        if (map != null && map.containsKey("openid") && map.containsKey("session_key")) {
 
-        // TODO:将用户信息存入redis以及mysql
+            try {
+                String token = TokenUtil.createToken(map.get("openid").toString());
 
-        return JsonUtil.success("用户创建成功");
+                Authentication authentication = new Authentication();
+                authentication.setOpenid(map.get("openid").toString());
+                authentication.setSession_key(map.get("session_key").toString());
+
+                return JsonUtil.success("用户创建成功", token);
+            }
+            catch (UnsupportedEncodingException ex) {
+                ex.printStackTrace();
+            }
+
+        }
+
+        return JsonUtil.failure("请求微信授权信息失败");
     }
 
     /*
@@ -67,6 +89,15 @@ public class UserController {
             return JsonUtil.failure("修改失败", 500);
 
         return JsonUtil.success("修改成功");
+    }
+
+    /*
+    获取用户类型
+     */
+    @LoginRequired
+    @RequestMapping(method = RequestMethod.GET, value = "/userType")
+    public String getUserType(@RequestParam int id) {
+        return null;
     }
 
     /*
