@@ -44,8 +44,8 @@ public class OrderController extends BaseRestController {
      */
     @LoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/repairation")
-    public String getOrder(@RequestParam("id") int id, @RequestAttribute("userId") int userId) {
-        User user = userService.getUserById(userId);
+    public String getOrder(@RequestParam("id") int id) {
+        User user = getSessionUser();
         Order order = orderService.getOrderById(id);
 
         if (user.getAuthority() == Constants.ORDINARY && !order.getUserId().equals(user.getId()))
@@ -78,8 +78,8 @@ public class OrderController extends BaseRestController {
      */
     @LoginRequired
     @RequestMapping(method = RequestMethod.PUT, value = "/repairation")
-    public String modifyOrder(@RequestBody Order order, @RequestAttribute("userId") int userId) {
-        User user = userService.getUserById(userId);
+    public String modifyOrder(@RequestBody Order order) {
+        User user = getSessionUser();
 
         int authLevel = user.getAuthority();
 
@@ -99,12 +99,10 @@ public class OrderController extends BaseRestController {
     private static boolean hasRight(String status, int auth) {
         boolean flag = false;
 
-        if (status.equals("报修确认") && auth <= Constants.ORDERER) {
+        if (status.equals("报修确认") && auth <= Constants.ORDERER)
             flag = true;
-        }
-        else if ((status.equals("维修处理") || status.equals("处理完毕")) && auth <= Constants.REPAIRER) {
+        else if ((status.equals("维修处理") || status.equals("处理完毕")) && auth <= Constants.REPAIRER)
             flag = true;
-        }
 
         return flag;
     }

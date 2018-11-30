@@ -49,14 +49,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
         else {
             //进行token验证 TODO:改为在redis中查找
-            Authentication auth = authenticationService.getUserIdByAccessToken(token);
-            if (auth == null)
-                pw.write(JsonUtil.failure("找不到该用户"));
-            else {
-                request.setAttribute("userId", auth.getUserId());
-
-                return true;
-            }
+            return true;
         }
 
         pw.flush();

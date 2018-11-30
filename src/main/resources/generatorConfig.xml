@@ -59,7 +59,7 @@
             <!--<property name="useActualColumnNames" value="true"/>-->
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true"/>-->
         <!--</table>-->
-        <!--TODO 重新生成User相关实体类-->
+
         <table tableName="user" domainObjectName="User">
             <property name="useActualColumnNames" value="true"/>
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>

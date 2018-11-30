@@ -20,4 +20,7 @@ public class Constants {
     @Value("${wechat.accessTokenUrl}")
     public static String accessTokenUrl;
 
+    @Value("${wechat.hToken.name}")
+    public static String WX_TOKEN_NAME;
+
 }

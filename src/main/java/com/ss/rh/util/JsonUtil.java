@@ -1,5 +1,6 @@
 package com.ss.rh.util;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.Map;
@@ -45,5 +46,13 @@ public class JsonUtil {
 
     public static Map json2Map(String json) {
         return JSONObject.parseObject(json, Map.class);
+    }
+
+    public static String object2JsonStr(Object o) {
+        return JSON.toJSONString(o);
+    }
+
+    public static <T>T json2Object(String jsonStr, Class<T> c) {
+        return JSON.parseObject(jsonStr, c);
     }
 }

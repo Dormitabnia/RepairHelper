@@ -4,6 +4,7 @@ import com.ss.rh.annotation.LoginRequired;
 import com.ss.rh.constants.Constants;
 import com.ss.rh.entity.Authentication;
 import com.ss.rh.entity.User;
+import com.ss.rh.service.AuthenticationService;
 import com.ss.rh.service.UserService;
 import com.ss.rh.util.JsonUtil;
 import com.ss.rh.util.TokenUtil;
@@ -13,10 +14,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-public class UserController {
+public class UserController extends BaseRestController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    AuthenticationService authenticationService;
 
     /*
     获取用户信息
@@ -39,40 +43,62 @@ public class UserController {
         if (code.isEmpty())
             return JsonUtil.failure("code为空，用户未授权");
 
-        //通过code获取用户session
+        // 通过code获取用户session
         Map map = TokenUtil.getSessionByJsCode(code);
 
-        String token = null;
+        if (map != null && map.containsKey("openid") && map.containsKey("session_key")) {
+            String token = TokenUtil.createToken(map.get("openid").toString());
 
-        return JsonUtil.success("Login success", token);
+            // 判断该用户是否已注册
+            User qUser = authenticationService.getUserByOpenId(map.get("openid").toString());
+
+            if (qUser == null) {
+//                qUser = new User();
+                qUser.setAuthority(Constants.ORDINARY);  // 默认为普通用户
+                userService.insertUser(qUser);
+
+                Authentication authentication = new Authentication();
+                authentication.setOpenid(map.get("openid").toString());
+                authentication.setSession_key(map.get("session_key").toString());
+                authentication.setUserId(qUser.getId());
+                authenticationService.insertAuth(authentication);
+            }
+
+            saveSession(qUser.getId(), token);
+            saveUser(qUser);
+
+            return JsonUtil.success("Login success", token);
+        }
+
+        return JsonUtil.failure("微信授权出错");
     }
 
     /*
     新增用户
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/auth")
-    public String addUser(@RequestParam("code") String code) {
-        if (code.isEmpty())
-            return JsonUtil.failure("code为空，用户未授权");
-
-        //通过code获取用户session
-        Map map = TokenUtil.getSessionByJsCode(code);
-
-        // TODO:将用户session存入redis以及mysql
-        if (map != null && map.containsKey("openid") && map.containsKey("session_key")) {
-
-            String token = TokenUtil.createToken(map.get("openid").toString());
-
-            Authentication authentication = new Authentication();
-            authentication.setOpenid(map.get("openid").toString());
-            authentication.setSession_key(map.get("session_key").toString());
-
-            return JsonUtil.success("用户创建成功", token);
-
-        }
-
-        return JsonUtil.failure("请求微信授权信息失败");
-    }
+//    @RequestMapping(method = RequestMethod.POST, value = "/auth")
+//    public String addUser(@RequestParam("code") String code) {
+//        if (code.isEmpty())
+//            return JsonUtil.failure("code为空，用户未授权");
+//
+//        //通过code获取用户session
+//        Map map = TokenUtil.getSessionByJsCode(code);
+//
+//
+//        if (map != null && map.containsKey("openid") && map.containsKey("session_key")) {
+//
+//            String token = TokenUtil.createToken(map.get("openid").toString());
+//
+//            Authentication authentication = new Authentication();
+//            authentication.setOpenid(map.get("openid").toString());
+//            authentication.setSession_key(map.get("session_key").toString());
+//
+//            return JsonUtil.success("用户创建成功", token);
+//
+//        }
+//
+//        return JsonUtil.failure("请求微信授权信息失败");
+//    }
 
     /*
     修改用户信息
@@ -95,7 +121,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.GET, value = "/userType")
     public String getUserType(@RequestParam int id) {
         int userType = Constants.ORDINARY;
-        return JsonUtil.success("query success", userType);
+        return JsonUtil.success("Query success", userType);
     }
 
     /*

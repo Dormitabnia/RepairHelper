@@ -1,6 +1,7 @@
 package com.ss.rh.service;
 
 import com.ss.rh.entity.Authentication;
+import com.ss.rh.entity.User;
 
 public interface AuthenticationService {
 
@@ -8,5 +9,6 @@ public interface AuthenticationService {
 
     boolean insertAuth(Authentication authentication);
 
-    Authentication getUserIdByAccessToken(String tk);
+    User getUserByOpenId(String openid);
+
 }
