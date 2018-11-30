@@ -1,6 +1,7 @@
 package com.ss.rh.controller.wx;
 
 import com.ss.rh.annotation.LoginRequired;
+import com.ss.rh.constants.Constants;
 import com.ss.rh.entity.Authentication;
 import com.ss.rh.entity.User;
 import com.ss.rh.service.UserService;
@@ -9,7 +10,6 @@ import com.ss.rh.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 @RestController
@@ -28,7 +28,7 @@ public class UserController {
         if (user == null)
             return JsonUtil.failure("无法找到该用户", 404);
 
-        return JsonUtil.success("查询成功", user);
+        return JsonUtil.success("query success", user);
     }
 
     /*
@@ -42,7 +42,9 @@ public class UserController {
         //通过code获取用户session
         Map map = TokenUtil.getSessionByJsCode(code);
 
-        return null;
+        String token = null;
+
+        return JsonUtil.success("Login success", token);
     }
 
     /*
@@ -59,18 +61,13 @@ public class UserController {
         // TODO:将用户session存入redis以及mysql
         if (map != null && map.containsKey("openid") && map.containsKey("session_key")) {
 
-            try {
-                String token = TokenUtil.createToken(map.get("openid").toString());
+            String token = TokenUtil.createToken(map.get("openid").toString());
 
-                Authentication authentication = new Authentication();
-                authentication.setOpenid(map.get("openid").toString());
-                authentication.setSession_key(map.get("session_key").toString());
+            Authentication authentication = new Authentication();
+            authentication.setOpenid(map.get("openid").toString());
+            authentication.setSession_key(map.get("session_key").toString());
 
-                return JsonUtil.success("用户创建成功", token);
-            }
-            catch (UnsupportedEncodingException ex) {
-                ex.printStackTrace();
-            }
+            return JsonUtil.success("用户创建成功", token);
 
         }
 
@@ -97,7 +94,8 @@ public class UserController {
     @LoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/userType")
     public String getUserType(@RequestParam int id) {
-        return null;
+        int userType = Constants.ORDINARY;
+        return JsonUtil.success("query success", userType);
     }
 
     /*

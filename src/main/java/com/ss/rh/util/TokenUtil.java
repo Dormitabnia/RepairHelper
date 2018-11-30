@@ -3,16 +3,26 @@ package com.ss.rh.util;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.ss.rh.constants.Constants;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
 
 public class TokenUtil {
+    public static final Logger logger = LoggerFactory.getLogger(TokenUtil.class);
 
-    public static String createToken(String id) throws UnsupportedEncodingException {
-        String token;
-        token = JWT.create().withAudience(id).sign(Algorithm.HMAC256(Constants.TOKEN_SECRET));
+    public static String createToken(String id) {
+        String token = null;
+
+        try {
+            token = JWT.create().withAudience(id).sign(Algorithm.HMAC256(Constants.TOKEN_SECRET));
+        }
+        catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
 
         return token;
     }
@@ -25,7 +35,8 @@ public class TokenUtil {
         params.put("grant_type", "authorization_code");
         String accessTokenResponse = HttpUtil.get(Constants.accessTokenUrl, params);
 
-        System.out.println("accessTokenResponse : " + accessTokenResponse);
+        logger.info("accessTokenResponse : " + accessTokenResponse);
+//        System.out.println("accessTokenResponse : " + accessTokenResponse);
 
         return JsonUtil.json2Map(accessTokenResponse);
     }

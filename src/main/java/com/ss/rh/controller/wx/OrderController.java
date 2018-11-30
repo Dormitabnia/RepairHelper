@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-public class OrderController {
+public class OrderController extends BaseRestController {
 
     @Autowired
     OrderService orderService;
@@ -27,14 +27,16 @@ public class OrderController {
      */
     @LoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/repairationList")
-    public List<Order> getOrderList(@RequestAttribute("userId") int userId) {
-        User user = userService.getUserById(userId);
+    public String getOrderList() {
+        User user = getSessionUser();
         int uid = 0;
 
         if (user.getAuthority() == Constants.ORDINARY)
-            uid = userId;
+            uid = user.getId();
 
-        return orderService.getOrderListByUid(uid);
+        List<Order> orders = orderService.getOrderListByUid(uid);
+
+        return JsonUtil.success("query success", orders);
     }
 
     /*
