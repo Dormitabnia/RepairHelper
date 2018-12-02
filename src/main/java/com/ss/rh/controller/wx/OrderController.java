@@ -78,16 +78,14 @@ public class OrderController extends BaseRestController {
      */
     @LoginRequired
     @RequestMapping(method = RequestMethod.PUT, value = "/repairation")
-    public String modifyOrder(@RequestBody Order order) {
+    public String modifyOrderStatus(@RequestParam("rid") int id, @RequestParam("status") String status) {
         User user = getSessionUser();
 
         int authLevel = user.getAuthority();
 
-        String n_status = order.getStatus();
+        Order q_order = orderService.getOrderById(id);
 
-        Order q_order = orderService.getOrderById(order.getId());
-
-        if (!hasRight(n_status, authLevel))
+        if (!hasRight(status, authLevel))
             return JsonUtil.failure("没有权限");
 
         return orderService.updateOrder(q_order) ? JsonUtil.success("修改成功") : JsonUtil.failure("修改失败");
