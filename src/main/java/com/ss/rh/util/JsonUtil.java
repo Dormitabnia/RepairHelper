@@ -55,4 +55,8 @@ public class JsonUtil {
     public static <T>T json2Object(String jsonStr, Class<T> c) {
         return JSON.parseObject(jsonStr, c);
     }
+
+    public static JSONObject str2Json(String jsonStr) {
+        return JSON.parseObject(jsonStr);
+    }
 }

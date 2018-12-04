@@ -34,7 +34,7 @@ public class JedisConfig {
     private long maxWaitMillis;
 
     @Bean
-    public JedisPool redisPoolFactory(){
+    public JedisPool redisPoolFactory() {
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
         jedisPoolConfig.setMaxIdle(maxIdle);
         jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);

@@ -1,10 +1,12 @@
 package com.ss.rh.service;
 
+import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.multipart.MultipartFile;
+
 public interface UploadService {
 
-    String uploadImg();
+    JSONObject uploadImg(MultipartFile file, String type);
 
-    String uploadSound();
+    JSONObject uploadSound(MultipartFile file, String type);
 
-    String uploadExcel();
 }
