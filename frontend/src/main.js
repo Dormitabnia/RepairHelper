@@ -21,9 +21,17 @@ import './permission' // permission control
 
 import * as filters from './filters' // global filters
 
+import preview from 'vue-photo-preview'
+// import '@/styles/skin.css'
+import '@/styles/preview.scss'
+
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium', // set element-ui default size
   i18n: (key, value) => i18n.t(key, value)
+})
+
+Vue.use(preview, {
+  fullscreenEl: false,
 })
 
 // register global utility filters.
