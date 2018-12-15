@@ -21,27 +21,29 @@ public class UploadServiceImpl implements UploadService {
 
     @Override
     public JSONObject uploadImg(MultipartFile file, String type) {
-        //使用当前时间创建图片目录以及为图片命名
+        // TODO:是否可以将图片上传和声音文件上传统一
+        // 使用当前时间创建图片目录以及为图片命名
         Date now = new Date();
-        String nowStr = null;
+        String folderPath = null;
         try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
-            nowStr = format.format(now);
+            SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd/");
+            folderPath = format.format(now);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
-        if (nowStr != null) {
+        if (folderPath != null) {
             String fileName = now.getTime() + "." + type;
-            boolean flag = writeImg(file, nowStr, fileName);
+            // 写图片文件
+            boolean flag = writeImg(file, folderPath, fileName);
 
             if(!flag)
                 return JsonUtil.str2Json(JsonUtil.failure("上传失败"));
 
-            String url = hostUrl + rootPath + fileName;
+            String uri = "image/" + folderPath + fileName;
 
-            return JsonUtil.str2Json(JsonUtil.success("上传成功", url));
+            return JsonUtil.str2Json(JsonUtil.success("上传成功", uri));
         }
 
         return JsonUtil.str2Json(JsonUtil.failure("上传失败"));

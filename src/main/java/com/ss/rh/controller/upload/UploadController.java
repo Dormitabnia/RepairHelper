@@ -16,6 +16,7 @@ public class UploadController {
      */
     @RequestMapping(method = RequestMethod.POST, value = "/img")
     public String uploadImg(@RequestParam("file") MultipartFile file) {
+        System.out.println(file.getContentType());
         return null;
     }
 

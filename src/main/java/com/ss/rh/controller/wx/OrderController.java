@@ -70,6 +70,8 @@ public class OrderController extends BaseRestController {
         order.setImg(orderPost.getImg());
         order.setStatus("报修等待");
 
+        orderService.insertOrder(order);
+
         return JsonUtil.success("报修信息创建成功");
     }
 
