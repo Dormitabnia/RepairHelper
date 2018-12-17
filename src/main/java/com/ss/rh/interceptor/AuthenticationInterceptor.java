@@ -1,9 +1,9 @@
 package com.ss.rh.interceptor;
 
 import com.ss.rh.annotation.LoginRequired;
-import com.ss.rh.entity.Authentication;
-import com.ss.rh.service.AuthenticationService;
+import com.ss.rh.constants.Constants;
 import com.ss.rh.util.JsonUtil;
+import com.ss.rh.util.RedisCacheUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
     @Autowired
-    AuthenticationService authenticationService;
+    RedisCacheUtil redisCacheUtil;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationInterceptor.class);
 
@@ -43,13 +43,21 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
         PrintWriter pw = response.getWriter();
 
-        String token = request.getHeader("token");
+        // 在header和attribute中查找token
+        String token = request.getHeader(Constants.WX_TOKEN_NAME);
+
         if (token == null) {
-            pw.write(JsonUtil.failure("无token，请先登录", 401));
+            token = (String) request.getAttribute(Constants.WX_TOKEN_NAME);
+            if(token == null) {
+                pw.write(JsonUtil.failure("找不到token"));
+            }
         }
         else {
-            //进行token验证 TODO:改为在redis中查找
-            return true;
+            //在redis中验证该token是否登录
+            if (redisCacheUtil.existsKey(token))
+                return true;
+
+            pw.write(JsonUtil.failure("用户尚未登录", 401));
         }
 
         pw.flush();

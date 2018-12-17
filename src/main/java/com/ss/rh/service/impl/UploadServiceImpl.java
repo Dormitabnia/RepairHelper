@@ -21,7 +21,7 @@ public class UploadServiceImpl implements UploadService {
 
     @Override
     public JSONObject uploadImg(MultipartFile file, String type) {
-        // TODO:是否可以将图片上传和声音文件上传统一
+        // TODO:是否要将图片上传和声音文件上传统一？
         // 使用当前时间创建图片目录以及为图片命名
         Date now = new Date();
         String folderPath = null;

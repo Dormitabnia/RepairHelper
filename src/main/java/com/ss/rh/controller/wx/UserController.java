@@ -8,10 +8,12 @@ import com.ss.rh.service.AuthenticationService;
 import com.ss.rh.service.UserService;
 import com.ss.rh.util.JsonUtil;
 import com.ss.rh.util.TokenUtil;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import org.slf4j.Logger;
 
 @RestController
 public class UserController extends BaseRestController {
@@ -22,15 +24,15 @@ public class UserController extends BaseRestController {
     @Autowired
     AuthenticationService authenticationService;
 
-    /*
-    获取用户信息
-     */
-    @RequestMapping(method = RequestMethod.GET, value = "/userInfo")
-    public String getUserInfo(@RequestParam("id") int id) {
-        User user = userService.getUserById(id);
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-        if (user == null)
-            return JsonUtil.failure("无法找到该用户", 404);
+    /*
+    获取当前用户信息
+     */
+    @LoginRequired
+    @RequestMapping(method = RequestMethod.GET, value = "/userInfo")
+    public String getUserInfo() {
+        User user = getSessionUser();
 
         return JsonUtil.success("query success", user);
     }
@@ -52,6 +54,7 @@ public class UserController extends BaseRestController {
             // 判断该用户是否已注册
             User qUser = authenticationService.getUserByOpenId(map.get("openid").toString());
 
+            // 若未注册则注册，在数据库中加入用户信息
             if (qUser == null) {
 //                qUser = new User();
                 qUser.setAuthority(Constants.ORDINARY);  // 默认为普通用户
@@ -101,11 +104,14 @@ public class UserController extends BaseRestController {
 //    }
 
     /*
-    修改用户信息
+    修改当前用户信息
      */
     @LoginRequired
     @RequestMapping(method = RequestMethod.PUT, value = "/userInfo")
     public String modifyUserInfo(@RequestBody User user) {
+        User sUser = getSessionUser();
+        if ((!sUser.getId().equals(user.getId())) && sUser.getAuthority() != Constants.ADMIN)
+            return JsonUtil.failure("无权限修改", 401);
         boolean flag = userService.updateUser(user);
 
         if (!flag)
@@ -115,12 +121,12 @@ public class UserController extends BaseRestController {
     }
 
     /*
-    获取用户类型
+    获取当前用户类型
      */
     @LoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/userType")
-    public String getUserType(@RequestParam int id) {
-        int userType = Constants.ORDINARY;
+    public String getUserType() {
+        int userType = getSessionUser().getAuthority();
         return JsonUtil.success("Query success", userType);
     }
 

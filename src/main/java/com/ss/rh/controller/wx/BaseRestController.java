@@ -28,8 +28,12 @@ public class BaseRestController {
         }
 
         return (String) request.getAttribute(Constants.WX_TOKEN_NAME);
+
     }
 
+    /*
+    获取当前用户
+     */
     protected User getSessionUser() {
         String userStr = redisCacheUtil.get(getUserToken());
 
@@ -39,12 +43,18 @@ public class BaseRestController {
         return null;
     }
 
+    /*
+    将用户与token绑定
+     */
     protected void saveUser(User user) {
         String token = redisCacheUtil.get(user.getId().toString());
 
         redisCacheUtil.set(token, JsonUtil.object2JsonStr(user));
     }
 
+    /*
+    将用户token存入redis
+     */
     protected void saveSession(int id, String token) {
         redisCacheUtil.set(Integer.toString(id), token);
     }
