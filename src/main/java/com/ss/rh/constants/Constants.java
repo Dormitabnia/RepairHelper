@@ -22,5 +22,4 @@ public class Constants {
 
     @Value("${wechat.hToken.name}")
     public static String WX_TOKEN_NAME;
-
 }

@@ -26,24 +26,8 @@ public class UploadController {
      */
     @RequestMapping(method = RequestMethod.POST, value = "/img")
     public String uploadImg(@RequestParam("file") MultipartFile file) {
-        if (file.getContentType() != null) {
-            String imgType = getImgType(file.getContentType());
-
-            if (imgType.equalsIgnoreCase("error")) {
-                logger.warn("图片格式不支持");
-                return JsonUtil.failure("图片文件格式不支持");
-            }
-
-
-            System.out.println("接收到图片文件，格式为" + file.getContentType());
-            logger.info("接收到图片文件，格式为" + imgType);
-
-            return uploadService.uploadImg(file, imgType).toJSONString();
-        }
-
-        logger.warn("文件类型为空，接收失败");
-        return JsonUtil.failure("文件类型为空，未接收文件");
-
+        logger.info("接收到文件");
+        return uploadService.uploadFile(file, "image").toJSONString();
     }
 
     /*
@@ -62,19 +46,4 @@ public class UploadController {
         return null;
     }
 
-    /*
-    判断图片文件类型
-     */
-    public static String getImgType(String contentType) {
-        if (contentType.contains("png"))
-            return "png";
-        else if (contentType.contains("jp"))
-            return "jpg";
-        else if (contentType.contains("bmp"))
-            return "bmp";
-        else if (contentType.contains("gif"))
-            return "gif";
-        else
-            return "error";
-    }
 }
