@@ -10,6 +10,7 @@
       active-text-color="#409EFF"
     >
       <sidebar-item v-for="route in permission_routers" :key="route.path" :item="route" :base-path="route.path"/>
+      <sidebar-item :item="logoutItem" base-path="/logout" @click.native="logout"/>
     </el-menu>
   </el-scrollbar>
 </template>
@@ -20,6 +21,22 @@ import SidebarItem from './SidebarItem'
 
 export default {
   components: { SidebarItem },
+  data() {
+    return {
+      logoutItem: {
+        name: 'logout',
+        children: [
+          {
+            meta: {
+              icon: 'exit',
+              title: '退出登录',
+            },
+            path: '',
+          }
+        ]
+      }
+    };
+  },
   computed: {
     ...mapGetters([
       'permission_routers',
@@ -27,6 +44,15 @@ export default {
     ]),
     isCollapse() {
       return !this.sidebar.opened
+    }
+  },
+  methods: {
+    logout() {
+      console.log('click');
+
+      this.$store.dispatch('LogOut').then(() => {
+        location.reload()// In order to re-instantiate the vue-router object to avoid bugs
+      })
     }
   }
 }
