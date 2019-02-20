@@ -6,6 +6,7 @@ import com.ss.rh.util.FileUtil;
 import com.ss.rh.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,11 +22,8 @@ import java.util.Date;
 public class UploadServiceImpl implements UploadService {
     private static final Logger logger = LoggerFactory.getLogger(UploadServiceImpl.class);
 
-    @Value("${file.rootFolderName}")
-    String rootPath;
-
-    @Value("${file.hostUrl}")
-    String hostUrl;
+    @Autowired
+    FileUtil fileUtil;
 
     @Override
     public JSONObject uploadFile(MultipartFile file, String type) {
@@ -51,7 +49,7 @@ public class UploadServiceImpl implements UploadService {
             if (folderPath != null) {
                 String fileName = now.getTime() + "." + fileType;
                 // 写文件
-                boolean flag = FileUtil.writeFile(file, type + "/" + folderPath, fileName);
+                boolean flag = fileUtil.writeFile(file, type + "/" + folderPath, fileName);
 
                 if(!flag)
                     return JsonUtil.str2Json(JsonUtil.failure("上传失败"));

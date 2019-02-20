@@ -24,6 +24,9 @@ public class UserController extends BaseRestController {
     @Autowired
     AuthenticationService authenticationService;
 
+    @Autowired
+    TokenUtil tokenUtil;
+
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     /*
@@ -46,10 +49,10 @@ public class UserController extends BaseRestController {
             return JsonUtil.failure("code为空，用户未授权");
 
         // 通过code获取用户session
-        Map map = TokenUtil.getSessionByJsCode(code);
+        Map map = tokenUtil.getSessionByJsCode(code);
 
         if (map != null && map.containsKey("openid") && map.containsKey("session_key")) {
-            String token = TokenUtil.createToken(map.get("openid").toString());
+            String token = tokenUtil.createToken(map.get("openid").toString());
 
             // 判断该用户是否已注册
             User qUser = authenticationService.getUserByOpenId(map.get("openid").toString());

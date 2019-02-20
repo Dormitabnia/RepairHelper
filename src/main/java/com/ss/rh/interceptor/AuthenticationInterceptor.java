@@ -1,6 +1,7 @@
 package com.ss.rh.interceptor;
 
 import com.ss.rh.annotation.LoginRequired;
+import com.ss.rh.constants.ConfigProperties;
 import com.ss.rh.constants.Constants;
 import com.ss.rh.util.JsonUtil;
 import com.ss.rh.util.RedisCacheUtil;
@@ -20,6 +21,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     @Autowired
     RedisCacheUtil redisCacheUtil;
+
+    @Autowired
+    ConfigProperties configProperties;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationInterceptor.class);
 
@@ -44,10 +48,10 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         PrintWriter pw = response.getWriter();
 
         // 在header和attribute中查找token
-        String token = request.getHeader(Constants.WX_TOKEN_NAME);
+        String token = request.getHeader(configProperties.getWX_TOKEN_NAME());
 
         if (token == null) {
-            token = (String) request.getAttribute(Constants.WX_TOKEN_NAME);
+            token = (String) request.getAttribute(configProperties.getWX_TOKEN_NAME());
             if(token == null) {
                 pw.write(JsonUtil.failure("找不到token"));
             }

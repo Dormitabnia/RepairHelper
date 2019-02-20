@@ -1,5 +1,6 @@
 package com.ss.rh.controller.wx;
 
+import com.ss.rh.constants.ConfigProperties;
 import com.ss.rh.constants.Constants;
 import com.ss.rh.entity.User;
 import com.ss.rh.util.JsonUtil;
@@ -15,19 +16,22 @@ public class BaseRestController {
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
+    @Autowired
+    private ConfigProperties configProperties;
+
     /*
     获取token（在header和attribute中找）
      */
     protected String getUserToken() {
         HttpServletRequest request =
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String hToken = request.getHeader(Constants.WX_TOKEN_NAME);
+        String hToken = request.getHeader(configProperties.getWX_TOKEN_NAME());
 
         if (hToken != null) {
             return hToken;
         }
 
-        return (String) request.getAttribute(Constants.WX_TOKEN_NAME);
+        return (String) request.getAttribute(configProperties.getWX_TOKEN_NAME());
 
     }
 
