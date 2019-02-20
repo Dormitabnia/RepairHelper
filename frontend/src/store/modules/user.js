@@ -1,5 +1,7 @@
 import { loginByUsername, logout, getUserInfo } from '@/api/login'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+// import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken } from '@/utils/tokenStorage'
+import { parseJwt } from '@/utils/jwt'
 
 const user = {
   state: {
@@ -48,10 +50,20 @@ const user = {
     LoginByUsername({ commit }, userInfo) {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
-        loginByUsername(username, userInfo.password).then(response => {
-          const data = response.data
+        loginByUsername(username, userInfo.password).then(data => {
+          // const data = response.data
+          // 设置 Token
           commit('SET_TOKEN', data.token)
-          setToken(response.data.token)
+          setToken(data.token)
+
+          // const jwtPayload = parseJwt(data.token)
+
+          // if (jwtPayload.roles && jwtPayload.roles.length > 0) { // 验证返回的roles是否是一个非空数组
+          //   commit('SET_ROLES', jwtPayload.roles)
+          // } else {
+          //   reject('getInfo: roles must be a non-null array !')
+          // }
+
           resolve()
         }).catch(error => {
           reject(error)
@@ -59,25 +71,35 @@ const user = {
       })
     },
 
-    // 获取用户信息
-    GetUserInfo({ commit, state }) {
+    // 获取用户权限
+    GetUserRoles({ commit, state }) {
       return new Promise((resolve, reject) => {
-        getUserInfo(state.token).then(response => {
-          if (!response.data) { // 由于mockjs 不支持自定义状态码只能这样hack
-            reject('error')
-          }
-          const data = response.data
+        if (state.roles.length === 0) {
+          const jwtPayload = parseJwt(state.token)
 
-          if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-            commit('SET_ROLES', data.roles)
+          if (jwtPayload.role && jwtPayload.role.length > 0) { // 验证返回的roles是否是一个非空数组
+            commit('SET_ROLES', jwtPayload.role)
           } else {
             reject('getInfo: roles must be a non-null array !')
           }
+        }
 
+        resolve(state.roles)
+      })
+    },
+
+    // 获取用户信息
+    GetUserInfo({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        getUserInfo(state.name).then(data => {
+          // if (!response.data) { // 由于mockjs 不支持自定义状态码只能这样hack
+          //   reject('error')
+          // }
+          // const data = response.data
           commit('SET_NAME', data.name)
           commit('SET_AVATAR', data.avatar)
           commit('SET_INTRODUCTION', data.introduction)
-          resolve(response)
+          resolve(data)
         }).catch(error => {
           reject(error)
         })
@@ -101,7 +123,7 @@ const user = {
     // 登出
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
-        logout(state.token).then(() => {
+        logout(state.name).then(() => {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
           removeToken()
@@ -116,6 +138,7 @@ const user = {
     FedLogOut({ commit }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
+        commit('SET_ROLES', [])
         removeToken()
         resolve()
       })
