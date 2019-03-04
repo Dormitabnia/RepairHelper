@@ -35,10 +35,11 @@ public class TokenUtil {
     }
 
     public Map getSessionByJsCode(String code) {
-        Map<String,Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("appid", configProperties.getMpAppId());
         params.put("secret", configProperties.getMpSecret());
         params.put("js_code", code);
+//        logger.info(code);
         params.put("grant_type", "authorization_code");
         String accessTokenResponse = HttpUtil.get(configProperties.getAccessTokenUrl(), params);
 

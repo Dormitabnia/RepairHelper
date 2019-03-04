@@ -12,13 +12,13 @@ import redis.clients.jedis.JedisPoolConfig;
 public class JedisConfig {
     private static final Logger logger = LoggerFactory.getLogger(JedisConfig.class);
 
-    @Value("${spring.redis.host}")
+    @Value("${spring.redis.host:127.0.0.1}")
     private String host;
 
-    @Value("${spring.redis.port}")
+    @Value("${spring.redis.port:6379}")
     private int port;
 
-    @Value("${spring.redis.timeout}")
+    @Value("${spring.redis.timeout:0}")
     private int timeout;
 
     @Value("${spring.redis.pool.max-active}")

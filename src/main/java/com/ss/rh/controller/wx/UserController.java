@@ -44,7 +44,7 @@ public class UserController extends BaseRestController {
     用户登录
      */
     @RequestMapping(method = RequestMethod.GET, value = "/login")
-    public String login(@RequestParam("code") String code) {
+    public String login(@RequestParam(value="code") String code) {
         if (code.isEmpty())
             return JsonUtil.failure("code为空，用户未授权");
 
@@ -59,7 +59,7 @@ public class UserController extends BaseRestController {
 
             // 若未注册则注册，在数据库中加入用户信息
             if (qUser == null) {
-//                qUser = new User();
+                qUser = new User();
                 qUser.setAuthority(Constants.ORDINARY);  // 默认为普通用户
                 userService.insertUser(qUser);
 

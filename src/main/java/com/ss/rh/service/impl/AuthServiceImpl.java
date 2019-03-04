@@ -24,16 +24,18 @@ public class AuthServiceImpl implements AuthenticationService {
 
     @Override
     public boolean insertAuth(Authentication authentication) {
-        return false;
+        return authenticationMapper.insert(authentication) > 0;
     }
 
     @Override
     public User getUserByOpenId(String openid) {
         AuthenticationExample ex = new AuthenticationExample();
         ex.createCriteria().andOpenidEqualTo(openid);
+
+        if (authenticationMapper.selectByExample(ex).size() == 0) return null;
         Authentication auth = authenticationMapper.selectByExample(ex).get(0);
 
-        if (auth == null) return null;
+//        if (auth == null) return null;
 
         return userService.getUserById(auth.getUserId());
     }

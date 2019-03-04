@@ -44,7 +44,7 @@ public class OrderController extends BaseRestController {
      */
     @LoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/repairation")
-    public String getOrder(@RequestParam("id") int id) {
+    public String getOrder(@RequestParam(value="id") int id) {
         User user = getSessionUser();
         Order order = orderService.getOrderById(id);
 
