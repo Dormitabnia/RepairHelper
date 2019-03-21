@@ -44,7 +44,7 @@ public class UserController extends BaseRestController {
     用户登录
      */
     @RequestMapping(method = RequestMethod.GET, value = "/login")
-    public String login(@RequestParam(value="code") String code) {
+    public String login(@RequestParam(value="code") String code, @RequestParam("defaultName") String nickname) {
         if (code.isEmpty())
             return JsonUtil.failure("code为空，用户未授权");
 
@@ -60,6 +60,9 @@ public class UserController extends BaseRestController {
             // 若未注册则注册，在数据库中加入用户信息
             if (qUser == null) {
                 qUser = new User();
+                qUser.setName(nickname);
+                qUser.setCompany("未设置");
+                qUser.setPhone("未设置");
                 qUser.setAuthority(Constants.ORDINARY);  // 默认为普通用户
                 userService.insertUser(qUser);
 
@@ -110,17 +113,39 @@ public class UserController extends BaseRestController {
     修改当前用户信息
      */
     @LoginRequired
-    @RequestMapping(method = RequestMethod.PUT, value = "/userInfo")
-    public String modifyUserInfo(@RequestBody User user) {
+    @RequestMapping(method = RequestMethod.PUT, value = "/userInfo", produces = "application/json;charset=utf-8")
+    public String modifyUserInfo(@RequestBody Map<String, Object> data) {
         User sUser = getSessionUser();
-        if ((!sUser.getId().equals(user.getId())) && sUser.getAuthority() != Constants.ADMIN)
-            return JsonUtil.failure("无权限修改", 401);
-        boolean flag = userService.updateUser(user);
+        logger.info("当前用户:" + sUser.getId());
 
-        if (!flag)
-            return JsonUtil.failure("修改失败", 500);
+        if (data.get("user") instanceof Map) {
+            Map user = (Map) data.get("user");
 
-        return JsonUtil.success("修改成功");
+            User nUser = JsonUtil.json2Object(JsonUtil.object2JsonStr(user), User.class);
+
+            if ((!sUser.getId().equals(nUser.getId())) && sUser.getAuthority() != Constants.ADMIN) {
+                logger.warn("用户" + sUser.getId() + "试图越权修改用户信息");
+                return JsonUtil.failure("无权限修改", 401);
+            }
+
+            saveUser(nUser);
+
+            // 插入数据库
+            boolean flag = userService.updateUser(nUser);
+
+            if (!flag)
+                return JsonUtil.failure("修改失败", 500);
+            else
+                return JsonUtil.success("修改成功");
+        }
+
+//        User nUser = new User();
+//        nUser.setId(sUser.getId());
+//        nUser.setName((String)user.get("name"));
+//        nUser.setPhone((String)user.get("phone"));
+//        nUser.setCompany((String)user.get("company"));
+
+        return JsonUtil.failure("提交的数据类型不正确");
     }
 
     /*

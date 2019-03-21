@@ -1,6 +1,7 @@
 package com.ss.rh.controller.upload;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ss.rh.annotation.LoginRequired;
 import com.ss.rh.service.UploadService;
 import com.ss.rh.util.JsonUtil;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ public class UploadController {
     /*
     单张图片上传
      */
+    @LoginRequired
     @RequestMapping(method = RequestMethod.POST, value = "/img")
     public String uploadImg(@RequestParam("file") MultipartFile file) {
         logger.info("接收到图片文件");
@@ -37,6 +39,7 @@ public class UploadController {
     /*
     单个声音文件上传
      */
+    @LoginRequired
     @RequestMapping(method = RequestMethod.POST, value = "/sound")
     public String uploadSound(@RequestParam("file") MultipartFile file) {
         logger.info("接收到声音文件");
@@ -46,6 +49,7 @@ public class UploadController {
     /*
     多张图片上传
      */
+    @LoginRequired
     @RequestMapping(method = RequestMethod.POST, value = "/multiImg")
     public String uploadMultiImg(MultipartRequest multipartRequest) {
         List<MultipartFile> files = multipartRequest.getFiles("file");

@@ -17,7 +17,11 @@ public class RedisCacheUtil {
     public String get(String key) {
         Jedis jedis = jedisPool.getResource();
 
-        return jedis.get(key);
+        String value = jedis.get(key);
+
+        jedis.close();
+
+        return value;
     }
 
     /*
@@ -25,8 +29,15 @@ public class RedisCacheUtil {
      */
     public void set(String key, Object value) {
         Jedis jedis = jedisPool.getResource();
+        if (jedis.exists(key))
+            jedis.del(key);
 
-        jedis.set(key, JsonUtil.object2JsonStr(value));
+        String valueStr = value instanceof String ? (String)value : JsonUtil.object2JsonStr(value);
+
+        jedis.set(key, valueStr);
+//        System.out.println("{" + key + "," + valueStr + "}");
+
+        jedis.close();
     }
 
     /*
@@ -35,6 +46,27 @@ public class RedisCacheUtil {
     public boolean existsKey(String key) {
         Jedis jedis = jedisPool.getResource();
 
-        return jedis.exists(key);
+        boolean isExists = jedis.exists(key);
+
+        jedis.close();
+
+        return isExists;
+    }
+
+    /*
+    存储定时过期的json字符串(以秒为单位)
+     */
+    public void setExpire(String key, Object value, int time) {
+        Jedis jedis = jedisPool.getResource();
+        if (jedis.exists(key))
+            jedis.del(key);
+
+        String valueStr = value instanceof String ? (String)value : JsonUtil.object2JsonStr(value);
+
+        jedis.set(key, valueStr);
+        jedis.expire(key, time);
+//        System.out.println("{" + key + "," + valueStr + "}," + time);
+
+        jedis.close();
     }
 }

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class BaseRestController {
 
+
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
@@ -51,16 +52,18 @@ public class BaseRestController {
     将用户与token绑定
      */
     protected void saveUser(User user) {
-        String token = redisCacheUtil.get(user.getId().toString());
+
+//        System.out.println(Integer.toString(user.getId()));
+        String token = redisCacheUtil.get(Integer.toString(user.getId()));
 
         redisCacheUtil.set(token, JsonUtil.object2JsonStr(user));
     }
 
     /*
-    将用户token存入redis
+    将用户token存入redis并设置过期时间
      */
     protected void saveSession(int id, String token) {
-        redisCacheUtil.set(Integer.toString(id), token);
+        redisCacheUtil.setExpire(Integer.toString(id), token, configProperties.getUserExpireTime());
     }
 
 }

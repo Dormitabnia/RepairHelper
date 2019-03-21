@@ -8,10 +8,15 @@ import com.ss.rh.entity.User;
 import com.ss.rh.service.OrderService;
 import com.ss.rh.service.UserService;
 import com.ss.rh.util.JsonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class OrderController extends BaseRestController {
@@ -21,6 +26,8 @@ public class OrderController extends BaseRestController {
 
     @Autowired
     UserService userService;
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     /*
     获取报修信息列表
@@ -36,6 +43,23 @@ public class OrderController extends BaseRestController {
 
         List<Order> orders = orderService.getOrderListByUid(uid);
 
+        List<Map<String, Object>> results = new ArrayList<>();
+        for (Order order : orders) {
+            Map<String, Object> orderMap = JsonUtil.json2Map(JsonUtil.object2JsonStr(order));
+
+            // 根据id获取维修员姓名
+            if (order.getRepairId() != null) {
+                String repairer = userService.getUserById(order.getRepairId()).getName();
+                orderMap.put("repairer", repairer);
+            }
+            else
+                orderMap.put("repairer", "未分配");
+            String submitter = userService.getUserById(order.getUserId()).getName();
+            orderMap.put("submitter", submitter);
+
+            results.add(orderMap);
+        }
+
         return JsonUtil.success("query success", orders);
     }
 
@@ -48,10 +72,22 @@ public class OrderController extends BaseRestController {
         User user = getSessionUser();
         Order order = orderService.getOrderById(id);
 
+        Map<String, Object> result = JsonUtil.json2Map(JsonUtil.object2JsonStr(order));
+
+        // 根据id获取维修员姓名
+        if (order.getRepairId() != null) {
+            String repairer = userService.getUserById(order.getRepairId()).getName();
+            result.put("repairer", repairer);
+        }
+        else
+            result.put("repairer", "未分配");
+        String submitter = userService.getUserById(order.getUserId()).getName();
+        result.put("submitter", submitter);
+
         if (user.getAuthority() == Constants.ORDINARY && !order.getUserId().equals(user.getId()))
             return JsonUtil.failure("权限不足！");
 
-        return JsonUtil.success("查询成功", order);
+        return JsonUtil.success("查询成功", result);
 
     }
 
@@ -60,12 +96,16 @@ public class OrderController extends BaseRestController {
      */
     @LoginRequired
     @RequestMapping(method = RequestMethod.POST, value = "/repairation")
-    public String createOrder(@RequestBody OrderPost orderPost, @RequestAttribute("userId") int userId) {
+    public String createOrder(@RequestBody Order orderPost) {
+//        Map orderMap = (Map)data.get("order");
+//        Order orderPost = JsonUtil.json2Object(JsonUtil.object2JsonStr(orderMap), Order.class);
+
         Order order = new Order();
+        User user = getSessionUser();
 
         order.setEquipInfo(orderPost.getEquipInfo());
         order.setFaultInfo(orderPost.getFaultInfo());
-        order.setUserId(userId);
+        order.setUserId(user.getId());
         order.setSound(orderPost.getSound());
         order.setImg(orderPost.getImg());
         order.setStatus("报修等待");
@@ -80,17 +120,29 @@ public class OrderController extends BaseRestController {
      */
     @LoginRequired
     @RequestMapping(method = RequestMethod.PUT, value = "/repairation")
-    public String modifyOrderStatus(@RequestParam("rid") int id, @RequestParam("status") String status) {
+    public String modifyOrderStatus(@RequestBody Map<String, Object> data) {
+        int id = Integer.parseInt((String) data.get("id"));
+        String status = (String) data.get("status");
+        logger.info(Integer.toString(id));
+        logger.info(status);
+
         User user = getSessionUser();
 
         int authLevel = user.getAuthority();
 
         Order q_order = orderService.getOrderById(id);
 
-        if (!hasRight(status, authLevel))
+        if (!hasRight(status, authLevel)) {
+            logger.warn("用户" + user.getId() + "试图越权修改报修信息");
             return JsonUtil.failure("没有权限");
-
-        return orderService.updateOrder(q_order) ? JsonUtil.success("修改成功") : JsonUtil.failure("修改失败");
+        }
+        else {
+            if (q_order.getRepairId() == null) {
+                q_order.setRepairId(user.getId());
+            }
+            q_order.setStatus(status);
+            return orderService.updateOrder(q_order) ? JsonUtil.success("修改成功") : JsonUtil.failure("修改失败");
+        }
     }
 
     /*

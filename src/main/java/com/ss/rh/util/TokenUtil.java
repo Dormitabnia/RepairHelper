@@ -7,6 +7,7 @@ import com.ss.rh.constants.Constants;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -23,8 +24,12 @@ public class TokenUtil {
     public String createToken(String id) {
         String token = null;
 
+        Date now = new Date();
+        String time = Long.toString(now.getTime());
+
         try {
             token = JWT.create().withAudience(id).sign(Algorithm.HMAC256(Constants.TOKEN_SECRET));
+//            token = JWT.create().withAudience(id+time).withExpiresAt(new Date()).sign(Algorithm.HMAC256(Constants.TOKEN_SECRET));
         }
         catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage());

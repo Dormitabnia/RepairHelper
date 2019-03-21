@@ -20,6 +20,9 @@ public class ConfigProperties {
     @Value("${file.rootFolderName}")
     private String rootPath;
 
+    @Value("${wechat.userExpireTime}")
+    private int userExpireTime;
+
     public String getMpAppId() {
         return mpAppId;
     }
@@ -38,5 +41,9 @@ public class ConfigProperties {
 
     public String getRootPath() {
         return rootPath;
+    }
+
+    public int getUserExpireTime() {
+        return userExpireTime;
     }
 }

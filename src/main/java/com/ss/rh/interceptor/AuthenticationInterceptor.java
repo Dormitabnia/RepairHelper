@@ -1,5 +1,11 @@
 package com.ss.rh.interceptor;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.ss.rh.annotation.LoginRequired;
 import com.ss.rh.constants.ConfigProperties;
 import com.ss.rh.constants.Constants;
@@ -45,27 +51,52 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (methodAnnotation == null)
             return true;
 
-        PrintWriter pw = response.getWriter();
+        response.reset();
+//        PrintWriter pw = response.getWriter();
 
         // 在header和attribute中查找token
         String token = request.getHeader(configProperties.getWX_TOKEN_NAME());
 
+        logger.info("method:" + method.getName());
+        logger.info("token:" + token);
+
         if (token == null) {
             token = (String) request.getAttribute(configProperties.getWX_TOKEN_NAME());
             if(token == null) {
+                PrintWriter pw = response.getWriter();
                 pw.write(JsonUtil.failure("找不到token"));
+                pw.flush();
+                pw.close();
             }
         }
         else {
-            //在redis中验证该token是否登录
-            if (redisCacheUtil.existsKey(token))
+            // 在redis中验证该token是否登录
+            if (redisCacheUtil.existsKey(token)) {
+                // 验证token
+                JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(Constants.TOKEN_SECRET)).build();
+                try {
+                    jwtVerifier.verify(token);
+                } catch (JWTVerificationException e) {
+//                    throw new RuntimeException("401");
+                    // 验证发生异常
+                    PrintWriter pw = response.getWriter();
+                    pw.write(JsonUtil.failure("token验证不通过！"));
+                    pw.flush();
+                    pw.close();
+                    return false;
+                }
                 return true;
-
-            pw.write(JsonUtil.failure("用户尚未登录", 401));
+            }
+            else {
+                PrintWriter pw = response.getWriter();
+                pw.write(JsonUtil.failure("用户尚未登录", 401));
+                pw.flush();
+                pw.close();
+            }
         }
 
-        pw.flush();
-        pw.close();
+//        pw.flush();
+//        pw.close();
 
         return false;
     }
