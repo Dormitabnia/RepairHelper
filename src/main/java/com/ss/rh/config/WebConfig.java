@@ -1,6 +1,7 @@
 package com.ss.rh.config;
 
 import com.ss.rh.interceptor.AuthenticationInterceptor;
+import com.ss.rh.interceptor.BackendAuthInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -13,6 +14,7 @@ public class WebConfig extends WebMvcConfigurationSupport {
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/**");
+        registry.addInterceptor(backendAuthInterceptor()).addPathPatterns("/**");
         super.addInterceptors(registry);
 
     }
@@ -25,5 +27,10 @@ public class WebConfig extends WebMvcConfigurationSupport {
     @Bean
     public AuthenticationInterceptor authenticationInterceptor() {
         return new AuthenticationInterceptor();
+    }
+
+    @Bean
+    public BackendAuthInterceptor backendAuthInterceptor() {
+        return new BackendAuthInterceptor();
     }
 }
