@@ -3,9 +3,7 @@ package com.ss.rh.interceptor;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.ss.rh.annotation.LoginRequired;
 import com.ss.rh.constants.ConfigProperties;
 import com.ss.rh.constants.Constants;
@@ -45,10 +43,10 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         HandlerMethod handlerMethod = (HandlerMethod)handler;
         Method method = handlerMethod.getMethod();
 
-        LoginRequired methodAnnotation = method.getAnnotation(LoginRequired.class);
+        LoginRequired lgAnnotation = method.getAnnotation(LoginRequired.class);
 
         // 不是LoginRequired标注的方法直接通过
-        if (methodAnnotation == null)
+        if (lgAnnotation == null)
             return true;
 
         response.reset();
