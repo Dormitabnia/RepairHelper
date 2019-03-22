@@ -23,6 +23,9 @@ public class ConfigProperties {
     @Value("${wechat.userExpireTime}")
     private int userExpireTime;
 
+    @Value("${backend.token-name}")
+    private String BK_TOKEN_NAME;
+
     public String getMpAppId() {
         return mpAppId;
     }
@@ -45,5 +48,9 @@ public class ConfigProperties {
 
     public int getUserExpireTime() {
         return userExpireTime;
+    }
+
+    public String getBK_TOKEN_NAME() {
+        return BK_TOKEN_NAME;
     }
 }

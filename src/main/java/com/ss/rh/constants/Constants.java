@@ -3,6 +3,7 @@ package com.ss.rh.constants;
 public class Constants {
 
     public static String TOKEN_SECRET = "TOKEN_SECRET_WK";
+    public static String B_TOKEN_SECRET = "TOKEN_SECRET_BK";
 
     public static int ADMIN = 0;  //系统管理员
     public static int REPAIRER = 1;  //维修人员
