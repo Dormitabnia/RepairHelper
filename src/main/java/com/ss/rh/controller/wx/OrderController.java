@@ -2,8 +2,8 @@ package com.ss.rh.controller.wx;
 
 import com.ss.rh.annotation.LoginRequired;
 import com.ss.rh.constants.Constants;
+import com.ss.rh.controller.BaseRestController;
 import com.ss.rh.entity.Order;
-import com.ss.rh.entity.OrderPost;
 import com.ss.rh.entity.User;
 import com.ss.rh.service.OrderService;
 import com.ss.rh.service.UserService;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

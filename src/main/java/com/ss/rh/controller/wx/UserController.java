@@ -2,6 +2,7 @@ package com.ss.rh.controller.wx;
 
 import com.ss.rh.annotation.LoginRequired;
 import com.ss.rh.constants.Constants;
+import com.ss.rh.controller.BaseRestController;
 import com.ss.rh.entity.Authentication;
 import com.ss.rh.entity.User;
 import com.ss.rh.service.AuthenticationService;
@@ -139,7 +140,7 @@ public class UserController extends BaseRestController {
                 return JsonUtil.success("修改成功");
         }
 
-//        User nUser = new User();
+//        BUserController nUser = new BUserController();
 //        nUser.setId(sUser.getId());
 //        nUser.setName((String)user.get("name"));
 //        nUser.setPhone((String)user.get("phone"));

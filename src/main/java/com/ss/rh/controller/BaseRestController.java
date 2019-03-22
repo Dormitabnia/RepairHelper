@@ -1,4 +1,4 @@
-package com.ss.rh.controller.wx;
+package com.ss.rh.controller;
 
 import com.ss.rh.constants.ConfigProperties;
 import com.ss.rh.constants.Constants;
@@ -54,9 +54,9 @@ public class BaseRestController {
     protected void saveUser(User user) {
 
 //        System.out.println(Integer.toString(user.getId()));
-        String token = redisCacheUtil.get(Integer.toString(user.getId()));
+        String uid = redisCacheUtil.get(Integer.toString(user.getId()));
 
-        redisCacheUtil.set(token, JsonUtil.object2JsonStr(user));
+        redisCacheUtil.set(uid, JsonUtil.object2JsonStr(user));
     }
 
     /*
