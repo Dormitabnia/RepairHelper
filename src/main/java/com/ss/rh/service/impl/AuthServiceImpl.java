@@ -9,6 +9,8 @@ import com.ss.rh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AuthServiceImpl implements AuthenticationService {
     @Autowired
@@ -19,7 +21,15 @@ public class AuthServiceImpl implements AuthenticationService {
 
     @Override
     public Authentication getAuthByUserId(int uid) {
-        return null;
+        AuthenticationExample ex = new AuthenticationExample();
+        ex.createCriteria().andUserIdEqualTo(uid);
+
+        List<Authentication> authList = authenticationMapper.selectByExample(ex);
+
+        if (authList.size() == 0)
+            return null;
+
+        return authList.get(0);
     }
 
     @Override
@@ -32,18 +42,18 @@ public class AuthServiceImpl implements AuthenticationService {
         AuthenticationExample ex = new AuthenticationExample();
         ex.createCriteria().andOpenidEqualTo(openid);
 
-        if (authenticationMapper.selectByExample(ex).size() == 0) return null;
-        Authentication auth = authenticationMapper.selectByExample(ex).get(0);
+        List<Authentication> authenticationList = authenticationMapper.selectByExample(ex);
 
-//        if (auth == null) return null;
+        if (authenticationList.size() == 0) return null;
+        Authentication auth = authenticationList.get(0);
 
         return userService.getUserById(auth.getUserId());
     }
-//    @Override
-//    public Authentication getUserIdByAccessToken(String tk) {
-//        AuthenticationExample ex = new AuthenticationExample();
-//        ex.createCriteria().andAccessTokenEqualTo(tk);
-//
-//        return authenticationMapper.selectByExample(ex).get(0);
-//    }
+
+    @Override
+    public List<Authentication> getAuthList() {
+        AuthenticationExample ex = new AuthenticationExample();
+
+        return authenticationMapper.selectByExample(ex);
+    }
 }

@@ -3,6 +3,8 @@ package com.ss.rh.service;
 import com.ss.rh.entity.Authentication;
 import com.ss.rh.entity.User;
 
+import java.util.List;
+
 public interface AuthenticationService {
 
     Authentication getAuthByUserId(int uid);
@@ -10,5 +12,7 @@ public interface AuthenticationService {
     boolean insertAuth(Authentication authentication);
 
     User getUserByOpenId(String openid);
+
+    List<Authentication> getAuthList();
 
 }
