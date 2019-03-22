@@ -17,7 +17,7 @@ public class BOrderController {
 
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/orderList")
-    public String getUserList() {
+    public String getOrder() {
         List<Order> userList = orderService.getAllOrders();
 
         return JsonUtil.success("query success", userList);
@@ -25,7 +25,7 @@ public class BOrderController {
 
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/order")
-    public String getUserInfo(@RequestParam("id") int id) {
+    public String getOrder(@RequestParam("id") int id) {
         Order order = orderService.getOrderById(id);
 
         if (order == null)
@@ -36,7 +36,7 @@ public class BOrderController {
 
     @BLoginRequired
     @RequestMapping(method = RequestMethod.PUT, value = "/backend/order")
-    public String modifyUserInfo(@RequestBody Order order) {
+    public String modifyOrder(@RequestBody Order order) {
         boolean flag = orderService.updateOrder(order);
 
         if (!flag)
@@ -47,12 +47,23 @@ public class BOrderController {
 
     @BLoginRequired
     @RequestMapping(method = RequestMethod.DELETE, value = "/backend/order")
-    public String deleteUser(@RequestParam("id") int id) {
+    public String deleteOrder(@RequestParam("id") int id) {
         boolean flag = orderService.deleteOrder(id);
 
         if (!flag)
             return JsonUtil.failure("delete failure", 500);
         else
             return JsonUtil.success("delete success");
+    }
+
+    @BLoginRequired
+    @RequestMapping(method = RequestMethod.POST, value = "/backend/order")
+    public String addOrder(@RequestBody Order order) {
+        boolean flag = orderService.insertOrder(order);
+
+        if (!flag)
+            return JsonUtil.failure("insert failure", 500);
+        else
+            return JsonUtil.success("insert success");
     }
 }
