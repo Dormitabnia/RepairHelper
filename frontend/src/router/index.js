@@ -7,7 +7,7 @@ Vue.use(Router)
 import Layout from '@/views/layout/Layout'
 
 /* Router Modules */
-import tableRouter from './modules/table'
+// import tableRouter from './modules/table'
 
 /** note: Submenu only appear when children.length>=1
  *  detail see  https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -42,6 +42,11 @@ export const constantRouterMap = [
   {
     path: '/login',
     component: () => import('@/views/login/index'),
+    hidden: true
+  },
+  {
+    path: '/register',
+    component: () => import('@/views/register/index'),
     hidden: true
   },
   {
@@ -113,6 +118,23 @@ export const constantRouterMap = [
     ]
   },
 
+  // Upload Excel View
+  {
+    path: '/uploadExcel',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/uploadExcel'),
+        name: 'UploadExcel',
+        meta: {
+          title: '上传 Excel',
+          icon: 'excel',
+        }
+      }
+    ]
+  },
+
   // {
   //   path: '/guide',
   //   component: Layout,
@@ -127,18 +149,18 @@ export const constantRouterMap = [
   //   ]
   // },
   // WavePlayer Test
-  {
-    path: '/wavePlayer',
-    component: Layout,
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/player-test/index'),
-        name: 'PlayerTest',
-        meta: { title: '测试', icon: 'qq', noCache: true }
-      }
-    ]
-  }
+  // {
+  //   path: '/wavePlayer',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: '',
+  //       component: () => import('@/views/player-test/index'),
+  //       name: 'PlayerTest',
+  //       meta: { title: '测试', icon: 'qq', noCache: true }
+  //     }
+  //   ]
+  // }
 ]
 
 export default new Router({
@@ -180,24 +202,24 @@ export const asyncRouterMap = [
   //   ]
   // },
 
-  {
-    path: '/icon',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/svg-icons/index'),
-        name: 'Icons',
-        meta: { title: 'icons', icon: 'icon', noCache: true }
-      }
-    ]
-  },
+  // {
+  //   path: '/icon',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/svg-icons/index'),
+  //       name: 'Icons',
+  //       meta: { title: 'icons', icon: 'icon', noCache: true }
+  //     }
+  //   ]
+  // },
 
   /** When your routing table is too long, you can split it into small modules**/
   // componentsRouter,
   // chartsRouter,
   // nestedRouter,
-  tableRouter,
+  // tableRouter,
 
   // {
   //   path: '/error',
@@ -238,36 +260,36 @@ export const asyncRouterMap = [
   //   ]
   // },
 
-  {
-    path: '/excel',
-    component: Layout,
-    redirect: '/excel/export-excel',
-    name: 'Excel',
-    meta: {
-      title: 'excel',
-      icon: 'excel'
-    },
-    children: [
-      {
-        path: 'export-excel',
-        component: () => import('@/views/excel/exportExcel'),
-        name: 'ExportExcel',
-        meta: { title: 'exportExcel' }
-      },
-      {
-        path: 'export-selected-excel',
-        component: () => import('@/views/excel/selectExcel'),
-        name: 'SelectExcel',
-        meta: { title: 'selectExcel' }
-      },
-      {
-        path: 'upload-excel',
-        component: () => import('@/views/excel/uploadExcel'),
-        name: 'UploadExcel',
-        meta: { title: 'uploadExcel' }
-      }
-    ]
-  },
+  // {
+  //   path: '/excel',
+  //   component: Layout,
+  //   redirect: '/excel/export-excel',
+  //   name: 'Excel',
+  //   meta: {
+  //     title: 'excel',
+  //     icon: 'excel'
+  //   },
+  //   children: [
+  //     {
+  //       path: 'export-excel',
+  //       component: () => import('@/views/excel/exportExcel'),
+  //       name: 'ExportExcel',
+  //       meta: { title: 'exportExcel' }
+  //     },
+  //     {
+  //       path: 'export-selected-excel',
+  //       component: () => import('@/views/excel/selectExcel'),
+  //       name: 'SelectExcel',
+  //       meta: { title: 'selectExcel' }
+  //     },
+  //     {
+  //       path: 'upload-excel',
+  //       component: () => import('@/views/excel/uploadExcel'),
+  //       name: 'UploadExcel2',
+  //       meta: { title: 'uploadExcel' }
+  //     }
+  //   ]
+  // },
 
   { path: '*', redirect: '/404', hidden: true }
 ]
