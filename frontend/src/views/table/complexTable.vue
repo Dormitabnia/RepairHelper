@@ -71,11 +71,11 @@
       <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('table.edit') }}</el-button>
-          <el-button v-if="scope.row.status!='published'" size="mini" type="success" @click="handleModifyStatus(scope.row,'published')">{{ $t('table.publish') }}
+          <el-button v-if="scope.row.status!='已发布'" size="mini" type="success" @click="handleModifyStatus(scope.row,'published')">{{ $t('table.publish') }}
           </el-button>
-          <el-button v-if="scope.row.status!='draft'" size="mini" @click="handleModifyStatus(scope.row,'draft')">{{ $t('table.draft') }}
+          <el-button v-if="scope.row.status!='草稿'" size="mini" @click="handleModifyStatus(scope.row,'draft')">{{ $t('table.draft') }}
           </el-button>
-          <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(scope.row,'deleted')">{{ $t('table.delete') }}
+          <el-button v-if="scope.row.status!='已删除'" size="mini" type="danger" @click="handleModifyStatus(scope.row,'deleted')">{{ $t('table.delete') }}
           </el-button>
         </template>
       </el-table-column>
@@ -83,8 +83,8 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @open="beforeDialogOpen" @opened="afterDialogOpen">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 80%; margin-left:50px;">
         <el-form-item :label="$t('table.type')" prop="type">
           <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
             <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
@@ -102,8 +102,30 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('table.importance')">
-          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;"/>
+          <el-rate
+            v-model="temp.importance"
+            :icon-classes="['ex-icon-frown-fill', 'ex-icon-meh-fill', 'ex-icon-smile-fill']"
+            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+            :texts="['差评','一般','一般','满意','满意']"
+            :max="5"
+            void-icon-class="ex-icon-meh-fill"
+            style="margin-top:8px;"
+          />
         </el-form-item>
+        <el-row :style="{'margin-bottom': '22px'}" type="flex">
+          <label class="el-form-item__label" style="width: 70px;">图片</label>
+          <el-carousel :style="{width:'400px'}" :autoplay="false" trigger="click">
+            <el-carousel-item v-for="(img, index) in temp.imgs" :key="index">
+              <img :src="img" preview="0" class="img-item-center">
+            </el-carousel-item>
+          </el-carousel>
+        </el-row>
+        <!-- <el-row>
+          <div id="waveform" />
+        </el-row>
+        <el-row>
+          <audio src="/static/sound/test-1.mp3" controls />
+        </el-row> -->
         <el-form-item :label="$t('table.remark')">
           <el-input :autosize="{ minRows: 2, maxRows: 4}" v-model="temp.remark" type="textarea" placeholder="Please input"/>
         </el-form-item>
@@ -153,9 +175,9 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
+        '已发布': 'success',
+        '草稿': 'info',
+        '已删除': 'danger',
       }
       return statusMap[status]
     },
@@ -171,7 +193,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
+        size: 10,
         importance: undefined,
         title: undefined,
         type: undefined,
@@ -189,7 +211,8 @@ export default {
         timestamp: new Date(),
         title: '',
         type: '',
-        status: 'published'
+        status: 'published',
+        imgs: '',
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -204,23 +227,51 @@ export default {
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      slide1: [
+        {
+          src: 'https://farm6.staticflickr.com/5591/15008867125_68a8ed88cc_b.jpg',
+          msrc: 'https://farm6.staticflickr.com/5591/15008867125_68a8ed88cc_m.jpg',
+          alt: 'picture1',
+          title: 'Image Caption 1',
+          w: 600,
+          h: 400
+        },
+        {
+          src: 'https://farm4.staticflickr.com/3902/14985871946_86abb8c56f_b.jpg',
+          msrc: 'https://farm4.staticflickr.com/3902/14985871946_86abb8c56f_m.jpg',
+          alt: 'picture2',
+          title: 'Image Caption 2',
+          w: 1200,
+          h: 900
+        }
+      ]
     }
   },
   created() {
     this.getList()
   },
+  mounted() {
+    console.log('mounted');
+    const waveScript = document.createElement('script');
+    waveScript.setAttribute('src', 'https://cdn.bootcss.com/wavesurfer.js/2.1.0/wavesurfer.min.js');
+    this.$el.appendChild(waveScript);
+    waveScript.onload = () => {
+      console.log('wavesufer load success!');
+    };
+  },
   methods: {
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
+      fetchList(this.listQuery).then(data => {
+        this.list = data.list;
+        this.total = data.total;
 
+        this.listLoading = false;
         // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        // setTimeout(() => {
+        //   this.listLoading = false
+        // }, 1.5 * 1000)
       })
     },
     handleFilter() {
@@ -329,8 +380,8 @@ export default {
       this.list.splice(index, 1)
     },
     handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
+      fetchPv(pv).then(data => {
+        this.pvData = data.pvData
         this.dialogPvVisible = true
       })
     },
@@ -356,7 +407,41 @@ export default {
           return v[j]
         }
       }))
+    },
+    beforeDialogOpen() {
+      console.log('Dialog is openning');
+
+      setTimeout(() => {
+        const wavesurfer = window.WaveSurfer.create({
+          container: '#waveform',
+          waveColor: 'violet',
+          progressColor: 'purple',
+        });
+        console.log('isLoading');
+        wavesurfer.load('/static/sound/test-1.mp3');
+      }, 500);
+    },
+    afterDialogOpen() {
+      console.log('Dialog is opened');
+      const wavesurfer = window.WaveSurfer.create({
+        container: 'waveform',
+        waveColor: 'violet',
+        progressColor: 'purple',
+      });
+      console.log('isLoading');
+      wavesurfer.load('/static/sound/test-1.mp3');
     }
   }
 }
 </script>
+
+<style scoped>
+@import url(https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css);
+.img-item-center {
+  max-width: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
 import store from '@/store'
-import { getToken } from '@/utils/auth'
+import { getToken } from '@/utils/tokenStorage'
 
 // create an axios instance
 const service = axios.create({
@@ -15,7 +15,8 @@ service.interceptors.request.use(
     // Do something before request is sent
     if (store.getters.token) {
       // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
-      config.headers['X-Token'] = getToken()
+      // config.headers['X-Token'] = getToken()
+      config.headers['wx_token'] = getToken()
     }
     return config
   },
@@ -30,6 +31,10 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     console.log(response.data);
+
+    if (response.data.code !== 200) {
+      return Promise.reject(new Error(response.data.msg));
+    }
 
     if (response.data.rs) {
       return response.data.rs;

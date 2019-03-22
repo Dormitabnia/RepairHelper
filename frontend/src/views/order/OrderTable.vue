@@ -64,10 +64,10 @@
         <el-form-item label="ID" prop="id">
           <el-input v-model="temp.id" :disabled="true" />
         </el-form-item>
-        <el-form-item label="用户名" prop="name">
+        <el-form-item label="用户名" prop="username">
           <el-input v-model="temp.username" />
         </el-form-item>
-        <el-form-item label="维修员" prop="name">
+        <el-form-item label="维修员" prop="repairName">
           <el-input v-model="temp.repairName" />
         </el-form-item>
         <el-form-item label="状态">
@@ -140,7 +140,7 @@
 </template>
 
 <script>
-import { fetchRepairationList, updateReparation, deleteReparation } from '@/api/order'
+import { fetchRepairationList, updateRepairation, deleteRepairation } from '@/api/order'
 import waves from '@/directive/waves' // Waves directive
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
@@ -151,48 +151,56 @@ const ORDER = {
     value: 'id',
     search: true,
     export: true,
+    editable: true,
   },
   USERNAME: {
     name: '用户名',
     value: 'username',
     search: true,
     export: true,
+    editable: true,
   },
   REPAIRNAME: {
     name: '维修员',
     value: 'repairName',
     search: true,
     export: true,
+    editable: true,
   },
   EQUIPINFO: {
     name: '设备信息',
     value: 'equipInfo',
     search: false,
     export: true,
+    editable: false,
   },
   FAULTINFO: {
     name: '故障信息',
     value: 'faultInfo',
     search: true,
     export: true,
+    editable: true,
   },
   SOUND: {
     name: '录音',
     value: 'sound',
     search: false,
     export: false,
+    editable: false,
   },
   IMG: {
     name: '图片',
     value: 'img',
     search: false,
     export: false,
+    editable: false,
   },
   STATUS: {
     name: '状态',
     value: 'status',
     search: false,
     export: true,
+    editable: true,
   },
 }
 
@@ -277,9 +285,9 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
+        id: [{ required: true, message: '不能为空', trigger: 'blur' }],
+        username: [{ required: true, message: '不能为空', trigger: 'blur' }],
+        repairName: [{ required: true, message: '不能为空', trigger: 'blur' }],
       },
       downloadLoading: false,
       exportDialogVisible: false,
@@ -290,13 +298,13 @@ export default {
     this.getList()
   },
   mounted() {
-    console.log('mounted');
-    const waveScript = document.createElement('script');
-    waveScript.setAttribute('src', 'https://cdn.jsdelivr.net/npm/wavesurfer.js@2.1.3/dist/wavesurfer.min.js');
-    this.$el.appendChild(waveScript);
-    waveScript.onload = () => {
-      console.log('wavesufer load success!');
-    };
+    // console.log('mounted');
+    // const waveScript = document.createElement('script');
+    // waveScript.setAttribute('src', 'https://cdn.jsdelivr.net/npm/wavesurfer.js@2.1.3/dist/wavesurfer.min.js');
+    // this.$el.appendChild(waveScript);
+    // waveScript.onload = () => {
+    //   console.log('wavesufer load success!');
+    // };
   },
   methods: {
     getList() {
@@ -352,8 +360,15 @@ export default {
       }).then(() => {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            const tempData = Object.assign({}, this.temp)
-            updateReparation(tempData).then(() => {
+            let tempData = Object.assign({}, this.temp)
+            // 过滤 Data
+            tempData = Object.values(ORDER).filter(v => v.editable)
+              .reduce((obj, v) => {
+                obj[v.value] = tempData[v.value];
+                return obj;
+              }, {});
+
+            updateRepairation(tempData).then(() => {
               for (const v of this.list) {
                 if (v.id === this.temp.id) {
                   const index = this.list.indexOf(v)
@@ -384,7 +399,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteReparation(row.id).then(data => {
+        deleteRepairation(row.id).then(data => {
           this.$message({
             type: 'success',
             message: '删除成功!'
