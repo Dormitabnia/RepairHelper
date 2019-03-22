@@ -56,7 +56,10 @@ const user = {
           commit('SET_TOKEN', data.token)
           setToken(data.token)
 
-          // const jwtPayload = parseJwt(data.token)
+          const jwtPayload = parseJwt(data.token);
+          console.log(jwtPayload);
+
+          commit('SET_NAME', jwtPayload.name);
 
           // if (jwtPayload.roles && jwtPayload.roles.length > 0) { // 验证返回的roles是否是一个非空数组
           //   commit('SET_ROLES', jwtPayload.roles)

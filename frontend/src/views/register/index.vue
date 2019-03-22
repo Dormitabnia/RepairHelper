@@ -1,11 +1,10 @@
 <template>
-  <div class="login-container">
+  <div class="register-container">
 
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+    <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">{{ $t('login.title') }}</h3>
-        <!-- <lang-select class="set-language"/> -->
+        <h3 class="title">注册</h3>
       </div>
 
       <el-form-item prop="username">
@@ -13,8 +12,8 @@
           <svg-icon icon-class="user" />
         </span>
         <el-input
-          v-model="loginForm.username"
-          :placeholder="$t('login.username')"
+          v-model="registerForm.username"
+          :placeholder="'用户名'"
           name="username"
           type="text"
           auto-complete="on"
@@ -27,81 +26,74 @@
         </span>
         <el-input
           :type="passwordType"
-          v-model="loginForm.password"
-          :placeholder="$t('login.password')"
+          v-model="registerForm.password"
           name="password"
-          auto-complete="on"
-          @keyup.enter.native="handleLogin" />
+          auto-complete="off"
+          @keyup.enter.native="handleRegister" />
+        <span class="show-pwd" @click="showPwd">
+          <svg-icon icon-class="eye" />
+        </span>
+      </el-form-item>
+      <el-form-item prop="cpassword">
+        <span class="svg-container">
+          <svg-icon icon-class="password" />
+        </span>
+        <el-input
+          :type="passwordType"
+          v-model="registerForm.cpassword"
+          name="password"
+          auto-complete="off"
+          @keyup.enter.native="handleRegister" />
         <span class="show-pwd" @click="showPwd">
           <svg-icon icon-class="eye" />
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">{{ $t('login.logIn') }}</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleRegister">注册</el-button>
+      <el-button type="info" style="width:100%;margin-bottom:30px;margin-left: 0px" @click.native.prevent="$router.push('/login')">返回</el-button>
 
-      <!-- <div class="tips">
-        <span>{{ $t('login.username') }} : admin</span>
-        <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
-      </div>
-      <div class="tips">
-        <span style="margin-right:18px;">{{ $t('login.username') }} : editor</span>
-        <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
-      </div> -->
-
-      <!-- <el-button class="thirdparty-button" type="primary" @click="showDialog=true">{{ $t('login.thirdparty') }}</el-button> -->
-      <!-- 注册 -->
-      <el-button type="primary" style="width:100%;margin-bottom:30px;margin-left: 0px" @click.native.prevent="handleRegister">注册</el-button>
-
-      <!-- <el-button class="thirdparty-button" type="primary" @click="showDialog=true">注册</el-button> -->
     </el-form>
-
-    <el-dialog :title="$t('login.thirdparty')" :visible.sync="showDialog" append-to-body>
-      {{ $t('login.thirdpartyTips') }}
-      <br>
-      <br>
-      <br>
-      <social-sign />
-    </el-dialog>
 
   </div>
 </template>
 
 <script>
-import { isvalidUsername } from '@/utils/validate'
-import LangSelect from '@/components/LangSelect'
-import SocialSign from './socialsignin'
+import { isvalidUsername } from '@/utils/validate';
+import { register } from '@/api/register';
 
 export default {
-  name: 'Login',
-  components: { LangSelect, SocialSign },
+  name: 'Register',
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!isvalidUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+        callback(new Error('用户名不能为空'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('密码长度不能小于6位'))
       } else {
         callback()
       }
     }
     return {
-      loginForm: {
-        username: 'root',
-        password: '123456'
+      registerForm: {
+        username: '',
+        password: '',
+        cpassword: '',
       },
-      loginRules: {
+      registerRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+        cpassword: [{ required: true, trigger: 'blur', validator: this.validateCPassword }]
       },
       passwordType: 'password',
       loading: false,
       showDialog: false,
-      redirect: undefined
+      redirect: undefined,
+      t: 2,
     }
   },
   watch: {
@@ -113,12 +105,12 @@ export default {
     }
 
   },
-  created() {
-    // window.addEventListener('hashchange', this.afterQRScan)
-  },
-  destroyed() {
-    // window.removeEventListener('hashchange', this.afterQRScan)
-  },
+  // created() {
+  //   // window.addEventListener('hashchange', this.afterQRScan)
+  // },
+  // destroyed() {
+  //   // window.removeEventListener('hashchange', this.afterQRScan)
+  // },
   methods: {
     showPwd() {
       if (this.passwordType === 'password') {
@@ -127,44 +119,36 @@ export default {
         this.passwordType = 'password'
       }
     },
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+    handleRegister() {
+      this.$refs.registerForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
+          // this.$store.dispatch('RegisterByUsername', this.registerForm).then(() => {
+          //   this.loading = false
+          //   this.$router.push({ path: this.redirect || '/' })
+          // }).catch(() => {
+          //   this.loading = false
+          // })
+
+          register(this.registerForm).then(data => {
             this.loading = false
-            this.$router.push({ path: this.redirect || '/' })
+            this.$router.push('/login');
           }).catch(e => {
             this.loading = false;
-            return Promise.reject(e);
-          })
+          });
         } else {
           console.log('error submit!!')
           return false
         }
       })
     },
-    handleRegister() {
-      this.$router.push('/register');
+    validateCPassword(rule, value, callback) {
+      if (value !== this.registerForm.password) {
+        callback(new Error('两次密码不一致'))
+      } else {
+        callback()
+      }
     },
-    afterQRScan() {
-      // const hash = window.location.hash.slice(1)
-      // const hashObj = getQueryObject(hash)
-      // const originUrl = window.location.origin
-      // history.replaceState({}, '', originUrl)
-      // const codeMap = {
-      //   wechat: 'code',
-      //   tencent: 'code'
-      // }
-      // const codeName = hashObj[codeMap[this.auth_type]]
-      // if (!codeName) {
-      //   alert('第三方登录失败')
-      // } else {
-      //   this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-      //     this.$router.push({ path: '/' })
-      //   })
-      // }
-    }
   }
 }
 </script>
@@ -178,7 +162,7 @@ export default {
   $cursor: #fff;
 
   @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
-    .login-container .el-input input{
+    .register-container .el-input input{
       color: $cursor;
       &::first-line {
         color: $light_gray;
@@ -187,7 +171,7 @@ export default {
   }
 
   /* reset element-ui css */
-  .login-container {
+  .register-container {
     .el-input {
       display: inline-block;
       height: 47px;
@@ -221,12 +205,12 @@ $bg:#2d3a4b;
 $dark_gray:#889aa4;
 $light_gray:#eee;
 
-.login-container {
+.register-container {
   position: fixed;
   height: 100%;
   width: 100%;
   background-color: $bg;
-  .login-form {
+  .register-form {
     position: absolute;
     left: 0;
     right: 0;
