@@ -14,4 +14,8 @@ public interface OrderService {
 
     boolean insertOrder(Order order);
 
+    List<Order> getAllOrders();
+
+    boolean deleteOrder(int id);
+
 }

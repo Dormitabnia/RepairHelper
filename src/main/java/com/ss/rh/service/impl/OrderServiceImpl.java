@@ -42,4 +42,16 @@ public class OrderServiceImpl implements OrderService {
     public boolean insertOrder(Order order) {
         return orderMapper.insert(order) > 0;
     }
+
+    @Override
+    public List<Order> getAllOrders() {
+        OrderExample ex = new OrderExample();
+
+        return orderMapper.selectByExample(ex);
+    }
+
+    @Override
+    public boolean deleteOrder(int id) {
+        return orderMapper.deleteByPrimaryKey(id) > 0;
+    }
 }
