@@ -2,6 +2,8 @@ package com.ss.rh.service;
 
 import com.ss.rh.entity.User;
 
+import java.util.List;
+
 public interface UserService {
 
     User getUserById(int id);
@@ -11,5 +13,7 @@ public interface UserService {
     boolean updateUser(User user);
 
     boolean deleteUserById(int id);
+
+    List<User> getUserList();
 
 }
