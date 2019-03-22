@@ -8,6 +8,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+/*
+发起http请求的工具类
+ */
 public class HttpUtil {
 
     public static String get(String url, Map<String, Object> param) {

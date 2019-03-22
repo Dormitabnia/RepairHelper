@@ -7,6 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 
+/*
+文件写入工具类
+ */
 @Component
 public class FileUtil {
 
@@ -18,7 +21,7 @@ public class FileUtil {
      */
     public boolean writeFile(MultipartFile file, String folderPath, String fileName) {
         try {
-            File fd = new File(configProperties.getRootPath() + folderPath);  // TODO:真实路径还需要考虑
+            File fd = new File(configProperties.getRootPath() + folderPath);
 //            System.out.println(configProperties.getRootPath() + folderPath);
             if (!fd.exists()) {
                 fd.mkdirs();
