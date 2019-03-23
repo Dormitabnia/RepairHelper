@@ -9,6 +9,7 @@ import com.ss.rh.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +39,15 @@ public class BOrderController {
         }
         else {
             try {
-                orderList = orderService.getOrdersLike(qt, q);
+                Class cl = Order.class;
+                Field field = cl.getDeclaredField(qt);
+                Class decalringCl = field.getDeclaringClass();
+
+                orderList = orderService.getOrdersLike(qt, q, decalringCl == String.class);
+
             } catch (NoSuchMethodException e) {
+                return JsonUtil.failure("非法字段");
+            } catch (NoSuchFieldException e) {
                 return JsonUtil.failure("非法字段");
             } catch (Exception e) {
                 return JsonUtil.failure("查找失败");

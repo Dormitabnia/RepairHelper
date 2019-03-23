@@ -3,6 +3,7 @@ package com.ss.rh.controller.backend;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ss.rh.annotation.BLoginRequired;
+import com.ss.rh.entity.Administrator;
 import com.ss.rh.entity.Authentication;
 import com.ss.rh.entity.Order;
 import com.ss.rh.service.AuthenticationService;
@@ -10,6 +11,7 @@ import com.ss.rh.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +54,11 @@ public class BAuthenController {
         }
         else {
             try {
-                authList = authenticationService.getAuthsLike(qt, q);
+                Class cl = Administrator.class;
+                Field field = cl.getDeclaredField(qt);
+                Class decalringCl = field.getDeclaringClass();
+
+                authList = authenticationService.getAuthsLike(qt, q, decalringCl == String.class);
             } catch (NoSuchMethodException e) {
                 return JsonUtil.failure("非法字段");
             } catch (Exception e) {
