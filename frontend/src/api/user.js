@@ -18,16 +18,16 @@ export function fetchUserInfo(id) {
 
 export function updateUserInfo(userInfo) {
   return request({
-    url: '/editUserInfo',
-    method: 'post',
+    url: '/userInfo',
+    method: 'put',
     data: userInfo,
   });
 }
 
 export function deleteUser(id) {
   return request({
-    url: '/deleteUser',
-    method: 'post',
+    url: '/userInfo',
+    method: 'delete',
     data: id,
   });
 }

@@ -16,18 +16,26 @@ export function fetchRepairation(id) {
   })
 }
 
-export function updateReparation(repairation) {
+export function updateRepairation(repairation) {
   return request({
-    url: '/editRepairation',
-    method: 'post',
+    url: '/repairation',
+    method: 'put',
     data: repairation,
   });
 }
 
-export function deleteReparation(id) {
+export function deleteRepairation(id) {
   return request({
-    url: '/deleteRepairation',
-    method: 'post',
+    url: '/repairation',
+    method: 'delete',
     data: id,
   });
+}
+
+export function addRepairation(data) {
+  return request({
+    url: '/repairation',
+    method: 'post',
+    data,
+  })
 }
