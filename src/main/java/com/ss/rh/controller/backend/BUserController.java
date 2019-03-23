@@ -1,5 +1,7 @@
 package com.ss.rh.controller.backend;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.ss.rh.annotation.BLoginRequired;
 import com.ss.rh.entity.User;
 import com.ss.rh.service.AdministratorService;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class BUserController {
@@ -31,10 +34,17 @@ public class BUserController {
      */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/userList")
-    public String getUserList() {
+    public String getUserList(@RequestBody Map<String, Object> data) {
+        int page = (int) data.get("page");
+        int size = (int) data.get("size");
+
+        PageHelper.startPage(page, size);
+
         List<User> userList = userService.getUserList();
 
-        return JsonUtil.success("query success", userList);
+        PageInfo res = new PageInfo(userList);
+
+        return JsonUtil.success("query success", res);
     }
 
     /*

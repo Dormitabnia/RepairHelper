@@ -1,5 +1,7 @@
 package com.ss.rh.controller.backend;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.ss.rh.annotation.BLoginRequired;
 import com.ss.rh.entity.Order;
 import com.ss.rh.service.OrderService;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class BOrderController {
@@ -15,12 +18,18 @@ public class BOrderController {
     @Autowired
     OrderService orderService;
 
-    @BLoginRequired
+//    @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/repairationList")
-    public String getOrder() {
-        List<Order> userList = orderService.getAllOrders();
+    public String getOrder(@RequestBody Map<String, Object> data) {
+        int page = (int) data.get("page");
+        int size = (int) data.get("size");
 
-        return JsonUtil.success("query success", userList);
+        PageHelper.startPage(page, size);
+        List<Order> orderList = orderService.getAllOrders();
+
+        PageInfo res = new PageInfo(orderList);
+
+        return JsonUtil.success("query success", res);
     }
 
     @BLoginRequired

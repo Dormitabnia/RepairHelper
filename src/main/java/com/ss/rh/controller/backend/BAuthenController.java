@@ -1,16 +1,17 @@
 package com.ss.rh.controller.backend;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.ss.rh.annotation.BLoginRequired;
 import com.ss.rh.entity.Authentication;
+import com.ss.rh.entity.Order;
 import com.ss.rh.service.AuthenticationService;
 import com.ss.rh.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class BAuthenController {
@@ -34,9 +35,16 @@ public class BAuthenController {
 
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/authList")
-    public String getAuthList() {
+    public String getAuthList(@RequestBody Map<String, Object> data) {
+        int page = (int) data.get("page");
+        int size = (int) data.get("size");
+
+        PageHelper.startPage(page, size);
+
         List<Authentication> authList = authenticationService.getAuthList();
 
-        return JsonUtil.success("query success", authList);
+        PageInfo res = new PageInfo(authList);
+
+        return JsonUtil.success("query success", res);
     }
 }

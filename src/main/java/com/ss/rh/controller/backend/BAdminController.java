@@ -1,5 +1,7 @@
 package com.ss.rh.controller.backend;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.ss.rh.annotation.BLoginRequired;
 import com.ss.rh.controller.BaseRestController;
 import com.ss.rh.entity.Administrator;
@@ -71,10 +73,17 @@ public class BAdminController extends BaseRestController {
      */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/adminList")
-    public String getAdminList() {
+    public String getAdminList(@RequestBody Map<String, Object> data) {
+        int page = (int) data.get("page");
+        int size = (int) data.get("size");
+
+        PageHelper.startPage(page, size);
+
         List<Administrator> adminList = administratorService.getAdminList();
 
-        return JsonUtil.success("query success", adminList);
+        PageInfo res = new PageInfo(adminList);
+
+        return JsonUtil.success("query success", res);
     }
 
     /*
