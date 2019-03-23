@@ -16,7 +16,7 @@ service.interceptors.request.use(
     if (store.getters.token) {
       // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
       // config.headers['X-Token'] = getToken()
-      config.headers['wx_token'] = getToken()
+      config.headers['backend_token'] = getToken()
     }
     return config
   },
@@ -33,6 +33,12 @@ service.interceptors.response.use(
     console.log(response.data);
 
     if (response.data.code !== 200) {
+      Message({
+        message: response.data.msg,
+        type: 'error',
+        duration: 3 * 1000,
+      });
+
       return Promise.reject(new Error(response.data.msg));
     }
 

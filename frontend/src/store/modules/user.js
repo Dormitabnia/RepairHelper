@@ -9,7 +9,7 @@ const user = {
     status: '',
     code: '',
     token: getToken(),
-    name: '',
+    name: getToken() ? parseJwt(getToken()).name : '',
     avatar: '',
     introduction: '',
     roles: [],
