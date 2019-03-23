@@ -17,4 +17,6 @@ public interface AdministratorService {
     List<Administrator> getAdminList();
 
     boolean deleteAdmin(int id);
+
+    List<Administrator> getAdminsLike(String qt, String q) throws Exception;
 }

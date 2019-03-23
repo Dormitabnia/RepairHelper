@@ -15,4 +15,6 @@ public interface AuthenticationService {
 
     List<Authentication> getAuthList();
 
+    List<Authentication> getAuthsLike(String qt, String q) throws Exception;
+
 }

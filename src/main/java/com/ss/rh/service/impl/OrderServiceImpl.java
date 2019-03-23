@@ -7,6 +7,7 @@ import com.ss.rh.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 @Service
@@ -53,5 +54,26 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean deleteOrder(int id) {
         return orderMapper.deleteByPrimaryKey(id) > 0;
+    }
+
+    @Override
+    public List<Order> getOrdersLike(String qt, String q) throws Exception {
+        String qtname;
+        String qq = "%" + q + "%";
+
+        if(!Character.isUpperCase(qt.charAt(0)))
+            qtname = new StringBuilder().append(Character.toUpperCase(qt.charAt(0))).append(qt.substring(1)).toString();
+        else
+            qtname = qt;
+
+        OrderExample ue = new OrderExample();
+
+        Class cl = OrderExample.Criteria.class;
+
+        Method method = cl.getMethod("and" + qtname + "Like", String.class);
+
+        method.invoke(ue.createCriteria(), qq);
+
+        return orderMapper.selectByExample(ue);
     }
 }

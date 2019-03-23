@@ -7,6 +7,7 @@ import com.ss.rh.service.AdministratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 @Service
@@ -54,5 +55,26 @@ public class AdminServiceImpl implements AdministratorService {
     @Override
     public boolean deleteAdmin(int id) {
         return administratorMapper.deleteByPrimaryKey(id) > 0;
+    }
+
+    @Override
+    public List<Administrator> getAdminsLike(String qt, String q) throws Exception {
+        String qtname;
+        String qq = "%" + q + "%";
+
+        if(!Character.isUpperCase(qt.charAt(0)))
+            qtname = new StringBuilder().append(Character.toUpperCase(qt.charAt(0))).append(qt.substring(1)).toString();
+        else
+            qtname = qt;
+
+        AdministratorExample ue = new AdministratorExample();
+
+        Class cl = AdministratorExample.Criteria.class;
+
+        Method method = cl.getMethod("and" + qtname + "Like", String.class);
+
+        method.invoke(ue.createCriteria(), qq);
+
+        return administratorMapper.selectByExample(ue);
     }
 }

@@ -16,4 +16,6 @@ public interface UserService {
 
     List<User> getUserList();
 
+    List<User> getUsersLike(String qt, String q) throws Exception;
+
 }
