@@ -6,6 +6,8 @@ import com.ss.rh.annotation.BLoginRequired;
 import com.ss.rh.entity.Order;
 import com.ss.rh.service.OrderService;
 import com.ss.rh.util.JsonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,8 @@ import java.util.Map;
 
 @RestController
 public class BOrderController {
+
+    private static final Logger logger = LoggerFactory.getLogger(BOrderController.class);
 
     @Autowired
     OrderService orderService;
@@ -46,9 +50,9 @@ public class BOrderController {
                 orderList = orderService.getOrdersLike(qt, q, decalringCl == String.class);
 
             } catch (NoSuchMethodException e) {
-                return JsonUtil.failure("非法字段");
+                return JsonUtil.failure("method非法字段");
             } catch (NoSuchFieldException e) {
-                return JsonUtil.failure("非法字段");
+                return JsonUtil.failure("field非法字段");
             } catch (Exception e) {
                 return JsonUtil.failure("查找失败");
             }
