@@ -139,7 +139,7 @@ public class BAdminController extends BaseRestController {
     /*
     删除管理员
      */
-//    @BLoginRequired
+    @BLoginRequired
     @RequestMapping(method = RequestMethod.DELETE, value = "/backend/admin")
     public String deleteAdmin(@RequestBody Map<String, Object> data) {
         int id = (int) data.get("id");
