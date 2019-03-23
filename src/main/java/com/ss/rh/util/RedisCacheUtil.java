@@ -69,4 +69,15 @@ public class RedisCacheUtil {
 
         jedis.close();
     }
+
+    /*
+    删除指定key的存储
+     */
+    public void delete(String key) {
+        Jedis jedis = jedisPool.getResource();
+
+        jedis.del(key);
+
+        jedis.close();
+    }
 }
