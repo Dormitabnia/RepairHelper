@@ -17,4 +17,6 @@ public interface AuthenticationService {
 
     List<Authentication> getAuthsLike(String qt, String q) throws Exception;
 
+    Authentication getAuthById(int id);
+
 }

@@ -78,4 +78,9 @@ public class AuthServiceImpl implements AuthenticationService {
 
         return authenticationMapper.selectByExample(ue);
     }
+
+    @Override
+    public Authentication getAuthById(int id) {
+        return authenticationMapper.selectByPrimaryKey(id);
+    }
 }
