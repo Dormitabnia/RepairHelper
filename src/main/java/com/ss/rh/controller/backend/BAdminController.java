@@ -47,6 +47,22 @@ public class BAdminController extends BaseRestController {
     }
 
     /*
+    后台登出
+     */
+    @BLoginRequired
+    @RequestMapping(method = RequestMethod.GET, value = "/backend/logout")
+    public String bLogout() {
+        int uid = getSessionUid();
+
+        if (uid == -1)
+            JsonUtil.success("already logout");
+
+        deleteAdmin(uid);
+
+        return JsonUtil.success("logout success");
+    }
+
+    /*
     查看所有管理员
      */
     @BLoginRequired
