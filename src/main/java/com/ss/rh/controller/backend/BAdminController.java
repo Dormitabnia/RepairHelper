@@ -7,6 +7,7 @@ import com.ss.rh.controller.BaseRestController;
 import com.ss.rh.entity.Administrator;
 import com.ss.rh.service.AdministratorService;
 import com.ss.rh.util.JsonUtil;
+import com.ss.rh.util.RedisCacheUtil;
 import com.ss.rh.util.TokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,11 +30,15 @@ public class BAdminController extends BaseRestController {
     @Autowired
     TokenUtil tokenUtil;
 
+    @Autowired
+    RedisCacheUtil redisCacheUtil;
+
     /*
     后台登录
      */
     @RequestMapping(method = RequestMethod.POST, value = "/backend/login")
     public String bLogin(@RequestBody Map<String, Object> data) {
+
         String username = (String) data.get("username");
         String password = (String) data.get("password");
 
@@ -48,6 +53,9 @@ public class BAdminController extends BaseRestController {
         }
 
         String token = tokenUtil.createBToken(qAdmin.getId().toString());
+
+        if (redisCacheUtil.existsKey(token))
+            return JsonUtil.failure("Already login", 401);
 
         saveSession(qAdmin.getId(), token);
 
