@@ -59,12 +59,12 @@ public class BAdminController extends BaseRestController {
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/logout")
     public String bLogout() {
-        int uid = getSessionUid();
+        String token = getUserToken();
 
-        if (uid == -1)
-            JsonUtil.success("already logout");
+//        if (uid == -1)
+//            JsonUtil.success("already logout");
 
-        deleteAdmin(uid);
+        delSession(token);
 
         return JsonUtil.success("logout success");
     }
@@ -134,10 +134,10 @@ public class BAdminController extends BaseRestController {
     /*
     删除管理员
      */
-    @BLoginRequired
+//    @BLoginRequired
     @RequestMapping(method = RequestMethod.DELETE, value = "/backend/admin")
-    public String deleteAdmin(@RequestBody int id) {
-        boolean flag = administratorService.deleteAdmin(id);
+    public String deleteAdmin(@RequestBody String id) {
+        boolean flag = administratorService.deleteAdmin(Integer.parseInt(id));
 
         if (!flag)
             return JsonUtil.failure("delete failure", 500);
