@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class BOrderController {
@@ -18,6 +17,9 @@ public class BOrderController {
     @Autowired
     OrderService orderService;
 
+    /*
+    获取报修信息列表
+     */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/repairationList")
     public String getOrder(@RequestParam("page") int page, @RequestParam("size") int size) {
@@ -29,6 +31,9 @@ public class BOrderController {
         return JsonUtil.success("query success", res);
     }
 
+    /*
+    根据id获取报修信息
+     */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/repairation")
     public String getOrder(@RequestParam("id") int id) {
@@ -40,6 +45,9 @@ public class BOrderController {
         return JsonUtil.success("query success", order);
     }
 
+    /*
+    修改报修信息
+     */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.PUT, value = "/backend/repairation")
     public String modifyOrder(@RequestBody Order order) {
@@ -51,6 +59,9 @@ public class BOrderController {
             return JsonUtil.success("modify success");
     }
 
+    /*
+    删除报修信息
+     */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.DELETE, value = "/backend/repairation")
     public String deleteOrder(@RequestParam("id") int id) {
@@ -62,6 +73,9 @@ public class BOrderController {
             return JsonUtil.success("delete success");
     }
 
+    /*
+    增加报修信息
+     */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.POST, value = "/backend/repairation")
     public String addOrder(@RequestBody Order order) {
