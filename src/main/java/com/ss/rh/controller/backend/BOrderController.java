@@ -22,9 +22,23 @@ public class BOrderController {
      */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/repairationList")
-    public String getOrder(@RequestParam("page") int page, @RequestParam("size") int size) {
+    public String getOrder(@RequestParam("page") int page, @RequestParam("size") int size,
+                           @RequestParam(value = "qt", required = false) String qt,
+                           @RequestParam(value = "q", required = false) String q) {
         PageHelper.startPage(page, size);
-        List<Order> orderList = orderService.getAllOrders();
+        List<Order> orderList;
+
+        if (qt == null && q == null)
+            orderList = orderService.getAllOrders();
+        else {
+            try {
+                orderList = orderService.getOrdersLike(qt, q);
+            } catch (NoSuchMethodException e) {
+                return JsonUtil.failure("非法字段");
+            } catch (Exception e) {
+                return JsonUtil.failure("查找失败");
+            }
+        }
 
         PageInfo res = new PageInfo(orderList);
 

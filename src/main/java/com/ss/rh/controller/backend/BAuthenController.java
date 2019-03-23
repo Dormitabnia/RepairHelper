@@ -35,11 +35,25 @@ public class BAuthenController {
 
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/authList")
-    public String getAuthList(@RequestParam("page") int page, @RequestParam("size") int size) {
+    public String getAuthList(@RequestParam("page") int page, @RequestParam("size") int size,
+                              @RequestParam(value = "qt", required = false) String qt,
+                              @RequestParam(value = "q", required = false) String q) {
 
         PageHelper.startPage(page, size);
 
-        List<Authentication> authList = authenticationService.getAuthList();
+        List<Authentication> authList;
+
+        if (qt == null && q == null)
+            authList = authenticationService.getAuthList();
+        else {
+            try {
+                authList = authenticationService.getAuthsLike(qt, q);
+            } catch (NoSuchMethodException e) {
+                return JsonUtil.failure("非法字段");
+            } catch (Exception e) {
+                return JsonUtil.failure("查找失败");
+            }
+        }
 
         PageInfo res = new PageInfo(authList);
 

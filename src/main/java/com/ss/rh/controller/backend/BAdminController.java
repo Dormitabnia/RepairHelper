@@ -73,11 +73,25 @@ public class BAdminController extends BaseRestController {
      */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/adminList")
-    public String getAdminList(@RequestParam("page") int page, @RequestParam("size") int size) {
+    public String getAdminList(@RequestParam("page") int page, @RequestParam("size") int size,
+                               @RequestParam(value = "qt", required = false) String qt,
+                               @RequestParam(value = "q", required = false) String q) {
 
         PageHelper.startPage(page, size);
 
-        List<Administrator> adminList = administratorService.getAdminList();
+        List<Administrator> adminList;
+
+        if (qt == null && q == null)
+            adminList = administratorService.getAdminList();
+        else {
+            try {
+                adminList = administratorService.getAdminsLike(qt, q);
+            } catch (NoSuchMethodException e) {
+                return JsonUtil.failure("非法字段");
+            } catch (Exception e) {
+                return JsonUtil.failure("查找失败");
+            }
+        }
 
         PageInfo res = new PageInfo(adminList);
 

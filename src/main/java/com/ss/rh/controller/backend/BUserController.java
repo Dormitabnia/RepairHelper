@@ -34,10 +34,25 @@ public class BUserController {
      */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/userList")
-    public String getUserList(@RequestParam("page") int page, @RequestParam("size") int size) {
+    public String getUserList(@RequestParam("page") int page, @RequestParam("size") int size,
+                              @RequestParam(value = "qt", required = false) String qt,
+                              @RequestParam(value = "q", required = false) String q) {
+
         PageHelper.startPage(page, size);
 
-        List<User> userList = userService.getUserList();
+        List<User> userList;
+
+        if (qt == null && q == null)
+            userList = userService.getUserList();
+        else {
+            try {
+                userList = userService.getUsersLike(qt, q);
+            } catch (NoSuchMethodException e) {
+                return JsonUtil.failure("非法字段");
+            } catch (Exception e) {
+                return JsonUtil.failure("查找失败");
+            }
+        }
 
         PageInfo res = new PageInfo(userList);
 
