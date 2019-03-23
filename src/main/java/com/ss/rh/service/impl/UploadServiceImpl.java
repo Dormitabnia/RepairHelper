@@ -104,7 +104,7 @@ public class UploadServiceImpl implements UploadService {
      */
     private String getSoundType(String contentType) {
         logger.info(contentType);
-        if (contentType.contains("mp3"))
+        if (contentType.contains("mpeg"))
             return "mp3";
         else if (contentType.contains("wav"))
             return "wav";
