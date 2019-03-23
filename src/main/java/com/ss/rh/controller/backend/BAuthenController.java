@@ -10,6 +10,7 @@ import com.ss.rh.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +46,10 @@ public class BAuthenController {
 
         if (qt.isEmpty() && q.isEmpty())
             authList = authenticationService.getAuthList();
+        else if (qt == "id") {
+            authList = new ArrayList<>();
+            authList.add(authenticationService.getAuthById(Integer.parseInt(q)));
+        }
         else {
             try {
                 authList = authenticationService.getAuthsLike(qt, q);

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -83,6 +84,10 @@ public class BAdminController extends BaseRestController {
 
         if (qt.isEmpty() && q.isEmpty())
             adminList = administratorService.getAdminList();
+        else if (qt == "id") {
+            adminList = new ArrayList<>();
+            adminList.add(administratorService.getAdministratorById(Integer.parseInt(q)));
+        }
         else {
             try {
                 adminList = administratorService.getAdminsLike(qt, q);

@@ -9,6 +9,7 @@ import com.ss.rh.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,7 +21,7 @@ public class BOrderController {
     /*
     获取报修信息列表
      */
-    @BLoginRequired
+//    @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/repairationList")
     public String getOrder(@RequestParam("page") int page, @RequestParam("size") int size,
                            @RequestParam(value = "qt", required = false) String qt,
@@ -30,6 +31,10 @@ public class BOrderController {
 
         if (qt.isEmpty() && q.isEmpty())
             orderList = orderService.getAllOrders();
+        else if (qt == "id") {
+            orderList = new ArrayList<>();
+            orderList.add(orderService.getOrderById(Integer.parseInt(q)));
+        }
         else {
             try {
                 orderList = orderService.getOrdersLike(qt, q);
