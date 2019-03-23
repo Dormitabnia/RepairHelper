@@ -83,7 +83,7 @@ public class BOrderController {
      */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.DELETE, value = "/backend/repairation")
-    public String deleteOrder(@RequestParam("id") int id) {
+    public String deleteOrder(@RequestBody int id) {
         boolean flag = orderService.deleteOrder(id);
 
         if (!flag)

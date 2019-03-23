@@ -99,7 +99,7 @@ public class BUserController {
      */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.DELETE, value = "/backend/userInfo")
-    public String deleteUser(@RequestParam("id") int id) {
+    public String deleteUser(@RequestBody int id) {
         boolean flag = userService.deleteUserById(id);
 
         if (!flag)

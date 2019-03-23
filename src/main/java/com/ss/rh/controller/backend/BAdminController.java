@@ -136,7 +136,7 @@ public class BAdminController extends BaseRestController {
      */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.DELETE, value = "/backend/admin")
-    public String deleteAdmin(@RequestParam("id") int id) {
+    public String deleteAdmin(@RequestBody int id) {
         boolean flag = administratorService.deleteAdmin(id);
 
         if (!flag)
