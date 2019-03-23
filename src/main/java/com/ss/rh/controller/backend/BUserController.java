@@ -42,7 +42,9 @@ public class BUserController {
 
         List<User> userList;
 
-        if (qt == null && q == null)
+        logger.info(qt);
+
+        if (qt.isEmpty() && q.isEmpty())
             userList = userService.getUserList();
         else {
             try {

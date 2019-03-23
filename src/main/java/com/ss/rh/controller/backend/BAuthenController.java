@@ -43,7 +43,7 @@ public class BAuthenController {
 
         List<Authentication> authList;
 
-        if (qt == null && q == null)
+        if (qt.isEmpty() && q.isEmpty())
             authList = authenticationService.getAuthList();
         else {
             try {

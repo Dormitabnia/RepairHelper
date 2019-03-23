@@ -28,7 +28,7 @@ public class BOrderController {
         PageHelper.startPage(page, size);
         List<Order> orderList;
 
-        if (qt == null && q == null)
+        if (qt.isEmpty() && q.isEmpty())
             orderList = orderService.getAllOrders();
         else {
             try {

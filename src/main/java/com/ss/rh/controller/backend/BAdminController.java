@@ -81,7 +81,7 @@ public class BAdminController extends BaseRestController {
 
         List<Administrator> adminList;
 
-        if (qt == null && q == null)
+        if (qt.isEmpty() && q.isEmpty())
             adminList = administratorService.getAdminList();
         else {
             try {
