@@ -60,7 +60,7 @@ public class AdminServiceImpl implements AdministratorService {
     @Override
     public List<Administrator> getAdminsLike(String qt, String q, boolean isString) throws Exception {
         String qtname;
-        String qq = "%" + q + "%";
+        String qstr = "%" + q + "%";
 
         if(!Character.isUpperCase(qt.charAt(0)))
             qtname = new StringBuilder().append(Character.toUpperCase(qt.charAt(0))).append(qt.substring(1)).toString();
@@ -73,12 +73,14 @@ public class AdminServiceImpl implements AdministratorService {
 
         Method method;
 
-        if (isString)
+        if (isString) {
             method = cl.getMethod("and" + qtname + "Like", String.class);
-        else
-            method = cl.getMethod("and" + qtname + "EqualTo", String.class);
-
-        method.invoke(ue.createCriteria(), qq);
+            method.invoke(ue.createCriteria(), qstr);
+        }
+        else {
+            method = cl.getMethod("and" + qtname + "EqualTo", Integer.class);
+            method.invoke(ue.createCriteria(), Integer.parseInt(q));
+        }
 
         return administratorMapper.selectByExample(ue);
     }
