@@ -18,7 +18,7 @@ public class BOrderController {
     @Autowired
     OrderService orderService;
 
-//    @BLoginRequired
+    @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/repairationList")
     public String getOrder(@RequestBody Map<String, Object> data) {
         int page = (int) data.get("page");
