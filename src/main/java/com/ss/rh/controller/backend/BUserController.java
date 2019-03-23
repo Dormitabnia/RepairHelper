@@ -34,10 +34,7 @@ public class BUserController {
      */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/userList")
-    public String getUserList(@RequestBody Map<String, Object> data) {
-        int page = (int) data.get("page");
-        int size = (int) data.get("size");
-
+    public String getUserList(@RequestParam("page") int page, @RequestParam("size") int size) {
         PageHelper.startPage(page, size);
 
         List<User> userList = userService.getUserList();

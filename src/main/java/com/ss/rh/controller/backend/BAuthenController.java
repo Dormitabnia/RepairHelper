@@ -35,9 +35,7 @@ public class BAuthenController {
 
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/authList")
-    public String getAuthList(@RequestBody Map<String, Object> data) {
-        int page = (int) data.get("page");
-        int size = (int) data.get("size");
+    public String getAuthList(@RequestParam("page") int page, @RequestParam("size") int size) {
 
         PageHelper.startPage(page, size);
 

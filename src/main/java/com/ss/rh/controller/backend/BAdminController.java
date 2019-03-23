@@ -73,9 +73,7 @@ public class BAdminController extends BaseRestController {
      */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/adminList")
-    public String getAdminList(@RequestBody Map<String, Object> data) {
-        int page = (int) data.get("page");
-        int size = (int) data.get("size");
+    public String getAdminList(@RequestParam("page") int page, @RequestParam("size") int size) {
 
         PageHelper.startPage(page, size);
 
