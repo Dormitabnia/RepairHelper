@@ -124,6 +124,9 @@ public class UserController extends BaseRestController {
 
             User nUser = JsonUtil.json2Object(JsonUtil.object2JsonStr(user), User.class);
 
+            logger.info(nUser.getCompany());
+            logger.info(nUser.getPhone());
+
             if ((!sUser.getId().equals(nUser.getId())) && sUser.getAuthority() != Constants.ADMIN) {
                 logger.warn("用户" + sUser.getId() + "试图越权修改用户信息");
                 return JsonUtil.failure("无权限修改", 401);
