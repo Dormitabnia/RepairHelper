@@ -16,7 +16,7 @@ public class BOrderController {
     OrderService orderService;
 
     @BLoginRequired
-    @RequestMapping(method = RequestMethod.GET, value = "/orderList")
+    @RequestMapping(method = RequestMethod.GET, value = "/backend/repairationList")
     public String getOrder() {
         List<Order> userList = orderService.getAllOrders();
 
@@ -24,7 +24,7 @@ public class BOrderController {
     }
 
     @BLoginRequired
-    @RequestMapping(method = RequestMethod.GET, value = "/backend/order")
+    @RequestMapping(method = RequestMethod.GET, value = "/backend/repairation")
     public String getOrder(@RequestParam("id") int id) {
         Order order = orderService.getOrderById(id);
 
@@ -35,7 +35,7 @@ public class BOrderController {
     }
 
     @BLoginRequired
-    @RequestMapping(method = RequestMethod.PUT, value = "/backend/order")
+    @RequestMapping(method = RequestMethod.PUT, value = "/backend/repairation")
     public String modifyOrder(@RequestBody Order order) {
         boolean flag = orderService.updateOrder(order);
 
@@ -46,7 +46,7 @@ public class BOrderController {
     }
 
     @BLoginRequired
-    @RequestMapping(method = RequestMethod.DELETE, value = "/backend/order")
+    @RequestMapping(method = RequestMethod.DELETE, value = "/backend/repairation")
     public String deleteOrder(@RequestParam("id") int id) {
         boolean flag = orderService.deleteOrder(id);
 
@@ -57,7 +57,7 @@ public class BOrderController {
     }
 
     @BLoginRequired
-    @RequestMapping(method = RequestMethod.POST, value = "/backend/order")
+    @RequestMapping(method = RequestMethod.POST, value = "/backend/repairation")
     public String addOrder(@RequestBody Order order) {
         boolean flag = orderService.insertOrder(order);
 

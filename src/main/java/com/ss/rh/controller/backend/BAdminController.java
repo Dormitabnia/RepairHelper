@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class BAdminController extends BaseRestController {
@@ -28,7 +29,10 @@ public class BAdminController extends BaseRestController {
     后台登录
      */
     @RequestMapping(method = RequestMethod.POST, value = "/backend/login")
-    public String bLogin(@RequestParam("username") String username, @RequestParam("password") String password) {
+    public String bLogin(@RequestBody Map<String, Object> data) {
+        String username = (String) data.get("username");
+        String password = (String) data.get("password");
+
         Administrator qAdmin = administratorService.getAdministratorByUserName(username);
 
         if (qAdmin == null)

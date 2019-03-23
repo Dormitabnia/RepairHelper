@@ -30,7 +30,7 @@ public class BUserController {
     查看所有用户信息
      */
     @BLoginRequired
-    @RequestMapping(method = RequestMethod.GET, value = "/userList")
+    @RequestMapping(method = RequestMethod.GET, value = "/backend/userList")
     public String getUserList() {
         List<User> userList = userService.getUserList();
 
