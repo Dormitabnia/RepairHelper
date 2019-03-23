@@ -136,8 +136,10 @@ public class BAdminController extends BaseRestController {
      */
 //    @BLoginRequired
     @RequestMapping(method = RequestMethod.DELETE, value = "/backend/admin")
-    public String deleteAdmin(@RequestBody String id) {
-        boolean flag = administratorService.deleteAdmin(Integer.parseInt(id));
+    public String deleteAdmin(@RequestBody Map<String, Object> data) {
+        int id = (int) data.get("id");
+
+        boolean flag = administratorService.deleteAdmin(id);
 
         if (!flag)
             return JsonUtil.failure("delete failure", 500);

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class BOrderController {
@@ -83,7 +84,9 @@ public class BOrderController {
      */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.DELETE, value = "/backend/repairation")
-    public String deleteOrder(@RequestBody int id) {
+    public String deleteOrder(@RequestBody Map<String, Object> data) {
+        int id = (int) data.get("id");
+
         boolean flag = orderService.deleteOrder(id);
 
         if (!flag)
