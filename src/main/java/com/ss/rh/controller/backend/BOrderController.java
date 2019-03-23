@@ -21,7 +21,7 @@ public class BOrderController {
     /*
     获取报修信息列表
      */
-//    @BLoginRequired
+    @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/repairationList")
     public String getOrder(@RequestParam("page") int page, @RequestParam("size") int size,
                            @RequestParam(value = "qt", required = false) String qt,
