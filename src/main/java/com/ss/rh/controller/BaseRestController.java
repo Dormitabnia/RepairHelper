@@ -49,18 +49,6 @@ public class BaseRestController {
     }
 
     /*
-    获取当前用户id
-     */
-    protected int getSessionUid() {
-        String uid = redisCacheUtil.get(getUserToken());
-
-        if (uid != null)
-            return Integer.parseInt(uid);
-
-        return -1;
-    }
-
-    /*
     将用户信息缓存到redis
      */
     protected void saveUser(User user) {
@@ -75,6 +63,10 @@ public class BaseRestController {
      */
     protected void saveSession(int id, String token) {
         redisCacheUtil.setExpire(token, Integer.toString(id), configProperties.getUserExpireTime());
+    }
+
+    protected void delSession(String token) {
+        redisCacheUtil.delete(token);
     }
 
 }
