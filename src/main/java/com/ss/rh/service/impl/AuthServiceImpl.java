@@ -59,7 +59,7 @@ public class AuthServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public List<Authentication> getAuthsLike(String qt, String q) throws Exception {
+    public List<Authentication> getAuthsLike(String qt, String q, boolean isString) throws Exception {
         String qtname;
         String qq = "%" + q + "%";
 
@@ -72,7 +72,12 @@ public class AuthServiceImpl implements AuthenticationService {
 
         Class cl = AuthenticationExample.Criteria.class;
 
-        Method method = cl.getMethod("and" + qtname + "Like", String.class);
+        Method method;
+
+        if (isString)
+            method = cl.getMethod("and" + qtname + "Like", String.class);
+        else
+            method = cl.getMethod("and" + qtname + "EqualTo", String.class);
 
         method.invoke(ue.createCriteria(), qq);
 

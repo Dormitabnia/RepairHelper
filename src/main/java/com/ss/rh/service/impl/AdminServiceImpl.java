@@ -58,7 +58,7 @@ public class AdminServiceImpl implements AdministratorService {
     }
 
     @Override
-    public List<Administrator> getAdminsLike(String qt, String q) throws Exception {
+    public List<Administrator> getAdminsLike(String qt, String q, boolean isString) throws Exception {
         String qtname;
         String qq = "%" + q + "%";
 
@@ -71,7 +71,12 @@ public class AdminServiceImpl implements AdministratorService {
 
         Class cl = AdministratorExample.Criteria.class;
 
-        Method method = cl.getMethod("and" + qtname + "Like", String.class);
+        Method method;
+
+        if (isString)
+            method = cl.getMethod("and" + qtname + "Like", String.class);
+        else
+            method = cl.getMethod("and" + qtname + "EqualTo", String.class);
 
         method.invoke(ue.createCriteria(), qq);
 

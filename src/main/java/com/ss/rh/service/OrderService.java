@@ -18,6 +18,6 @@ public interface OrderService {
 
     boolean deleteOrder(int id);
 
-    List<Order> getOrdersLike(String qt, String q) throws Exception;
+    List<Order> getOrdersLike(String qt, String q, boolean isString) throws Exception;
 
 }

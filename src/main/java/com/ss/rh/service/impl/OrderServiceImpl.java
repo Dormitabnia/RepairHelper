@@ -57,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> getOrdersLike(String qt, String q) throws Exception {
+    public List<Order> getOrdersLike(String qt, String q, boolean isString) throws Exception {
         String qtname;
         String qq = "%" + q + "%";
 
@@ -70,7 +70,12 @@ public class OrderServiceImpl implements OrderService {
 
         Class cl = OrderExample.Criteria.class;
 
-        Method method = cl.getMethod("and" + qtname + "Like", String.class);
+        Method method;
+
+        if (isString)
+            method = cl.getMethod("and" + qtname + "Like", String.class);
+        else
+            method = cl.getMethod("and" + qtname + "EqualTo", String.class);
 
         method.invoke(ue.createCriteria(), qq);
 

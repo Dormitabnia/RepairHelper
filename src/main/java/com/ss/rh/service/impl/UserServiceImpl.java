@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUsersLike(String qt, String q) throws Exception {
+    public List<User> getUsersLike(String qt, String q, boolean isString) throws Exception {
         String qtname;
         String qq = "%" + q + "%";
 
@@ -57,7 +57,12 @@ public class UserServiceImpl implements UserService {
 
         Class cl = UserExample.Criteria.class;
 
-        Method method = cl.getMethod("and" + qtname + "Like", String.class);
+        Method method;
+
+        if (isString)
+            method = cl.getMethod("and" + qtname + "Like", String.class);
+        else
+            method = cl.getMethod("and" + qtname + "EqualTo", String.class);
 
         method.invoke(ue.createCriteria(), qq);
 

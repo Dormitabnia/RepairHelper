@@ -16,6 +16,6 @@ public interface UserService {
 
     List<User> getUserList();
 
-    List<User> getUsersLike(String qt, String q) throws Exception;
+    List<User> getUsersLike(String qt, String q, boolean isString) throws Exception;
 
 }
