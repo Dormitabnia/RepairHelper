@@ -40,30 +40,41 @@ public class BaseRestController {
     获取当前用户
      */
     protected User getSessionUser() {
-        String userStr = redisCacheUtil.get(getUserToken());
+        String uid = redisCacheUtil.get(getUserToken());
 
-        if (!userStr.isEmpty())
-            return JsonUtil.json2Object(userStr, User.class);
+        if (uid != null)
+            return JsonUtil.json2Object(redisCacheUtil.get(uid), User.class);
 
         return null;
     }
 
     /*
-    将用户与token绑定
+    获取当前用户id
+     */
+    protected int getSessionUid() {
+        String uid = redisCacheUtil.get(getUserToken());
+
+        if (uid != null)
+            return Integer.parseInt(uid);
+
+        return -1;
+    }
+
+    /*
+    将用户信息缓存到redis
      */
     protected void saveUser(User user) {
 
 //        System.out.println(Integer.toString(user.getId()));
-        String uid = redisCacheUtil.get(Integer.toString(user.getId()));
-
-        redisCacheUtil.set(uid, JsonUtil.object2JsonStr(user));
+//        String token = redisCacheUtil.get(Integer.toString(user.getId()));
+        redisCacheUtil.setExpire(Integer.toString(user.getId()), JsonUtil.object2JsonStr(user), configProperties.getUserExpireTime());
     }
 
     /*
-    将用户token存入redis并设置过期时间
+    将用户token存入redis并设置过期时间（token作为key）
      */
     protected void saveSession(int id, String token) {
-        redisCacheUtil.setExpire(Integer.toString(id), token, configProperties.getUserExpireTime());
+        redisCacheUtil.setExpire(token, Integer.toString(id), configProperties.getUserExpireTime());
     }
 
 }
