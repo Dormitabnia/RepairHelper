@@ -53,10 +53,10 @@ const user = {
         loginByUsername(username, userInfo.password).then(data => {
           // const data = response.data
           // 设置 Token
-          commit('SET_TOKEN', data.token)
-          setToken(data.token)
+          commit('SET_TOKEN', data)
+          setToken(data)
 
-          const jwtPayload = parseJwt(data.token);
+          const jwtPayload = parseJwt(data);
           console.log(jwtPayload);
 
           commit('SET_NAME', jwtPayload.name);
