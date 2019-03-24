@@ -9,7 +9,6 @@
         <el-option v-for="item in userType" :key="item" :label="item | typeFilter" :value="item"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">添加</el-button>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">{{ $t('table.export') }}</el-button>
       <el-checkbox v-model="showDelete" class="filter-item red-check" style="margin-left:15px;" @change="tableKey=tableKey+1">{{ '删除' }}</el-checkbox>
     </div>
@@ -84,21 +83,6 @@
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogCreateVisible" title="添加管理员" >
-      <el-form ref="adminForm" :rules="rules" :model="tempAdmin" label-position="left" label-width="70px" style="width: 80%; margin-left:50px;">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="tempAdmin.username" />
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="tempAdmin.password" type="password"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogCreateVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button type="primary" @click="createAdmin()">{{ $t('table.confirm') }}</el-button>
-      </div>
-    </el-dialog>
-
     <el-dialog :visible.sync="exportDialogVisible" title="导出 Excel">
       <el-row type="flex" justify="center">
         <el-col :span="8">
@@ -124,7 +108,7 @@
 </template>
 
 <script>
-import { fetchUserList, updateUserInfo, deleteUser, addAdmin } from '@/api/user'
+import { fetchUserList, updateUserInfo, deleteUser } from '@/api/user'
 import waves from '@/directive/waves' // Waves directive
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import ROLE from '@/utils/role'
@@ -224,11 +208,6 @@ export default {
       downloadLoading: false,
       exportDialogVisible: false,
       exportPage: undefined,
-      tempAdmin: {
-        username: '',
-        password: '',
-      },
-      dialogCreateVisible: false,
     }
   },
   created() {
@@ -269,46 +248,6 @@ export default {
         phone: '',
         authority: '',
       };
-    },
-    resetTempAdmin() {
-      this.tempAdmin = {
-        username: '',
-        password: '',
-      };
-    },
-    handleCreate() {
-      this.resetTempAdmin()
-      this.dialogCreateVisible = true
-      this.$nextTick(() => {
-        this.$refs['adminForm'].clearValidate()
-      })
-    },
-    createAdmin() {
-      this.$confirm('是否确定添加？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$refs['adminForm'].validate((valid) => {
-          if (valid) {
-            const tempData = Object.assign({}, this.tempAdmin)
-            addAdmin(tempData).then(() => {
-              this.dialogCreateVisible = false
-              this.$notify({
-                title: '成功',
-                message: '添加成功',
-                type: 'success',
-                duration: 1500,
-              })
-            })
-          }
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消'
-        });
-      });
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
