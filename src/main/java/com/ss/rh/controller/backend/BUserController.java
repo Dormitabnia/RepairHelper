@@ -4,7 +4,9 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ss.rh.annotation.BLoginRequired;
 import com.ss.rh.entity.User;
+import com.ss.rh.entity.UserExample;
 import com.ss.rh.service.AdministratorService;
+import com.ss.rh.service.MethodReflactService;
 import com.ss.rh.service.UserService;
 import com.ss.rh.util.JsonUtil;
 import com.ss.rh.util.TokenUtil;
@@ -13,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,46 +31,74 @@ public class BUserController {
     @Autowired
     TokenUtil tokenUtil;
 
+    @Autowired
+    MethodReflactService methodReflactService;
+
     /*
     查看所有用户信息
+    @param page:获取的页数
+    @param size:每页的数量
+    @param qt:查询的字段
+    @param q:查询的条件
+    @param f:查询的用户类型
      */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/userList")
     public String getUserList(@RequestParam("page") int page, @RequestParam("size") int size,
                               @RequestParam(value = "qt", required = false) String qt,
                               @RequestParam(value = "q", required = false) String q,
-                              @RequestParam(value = "f", required = false) int f) {
-
+                              @RequestParam(value = "f", required = false) String f) {
         PageHelper.startPage(page, size);
 
         List<User> userList;
 
-        if (qt.isEmpty() && q.isEmpty())
-            userList = userService.getUserList();
-        else if (qt == "id") {
-            userList = new ArrayList<>();
-            userList.add(userService.getUserById(Integer.parseInt(q)));
-        }
-        else {
-            try {
-                Class cl = User.class;
-                Field field = cl.getDeclaredField(qt);
-                String fieldType = field.getGenericType().toString();
+        int intF;
+        if (f.isEmpty())
+            intF = -1;
+        else
+            intF = Integer.parseInt(f);
 
-                userList = userService.getUsersLike(qt, q, fieldType.equals("class java.lang.String"));
-            } catch (NoSuchMethodException e) {
-                return JsonUtil.failure("非法字段");
-            } catch (Exception e) {
-                return JsonUtil.failure("查找失败");
-            }
+        try {
+            UserExample ue = methodReflactService.getUserExample(qt, q, intF);
+            userList = userService.getUsersByExample(ue);
+
+        } catch (NoSuchFieldException e) {
+            return JsonUtil.failure("Field非法字段");
+
+        } catch (NoSuchMethodException e) {
+            return JsonUtil.failure("Method非法字段");
+
+        } catch (Exception e) {
+            return JsonUtil.failure("查找失败");
+
         }
 
-        for (int i = 0; i < userList.size(); i++) {
-            if (userList.get(i).getAuthority() != f) {
-                userList.remove(i);
-                i--;
-            }
-        }
+//        if (qt.isEmpty() && q.isEmpty())
+//            userList = userService.getUserList();
+//        else if (qt == "id") {
+//            userList = new ArrayList<>();
+//            userList.add(userService.getUserById(Integer.parseInt(q)));
+//        }
+//        else {
+//            try {
+//                Class cl = User.class;
+//                Field field = cl.getDeclaredField(qt);
+//                String fieldType = field.getGenericType().toString();
+//
+//                userList = userService.getUsersLike(qt, q, fieldType.equals("class java.lang.String"));
+//            } catch (NoSuchMethodException e) {
+//                return JsonUtil.failure("非法字段");
+//            } catch (Exception e) {
+//                return JsonUtil.failure("查找失败");
+//            }
+//        }
+//
+//        for (int i = 0; i < userList.size(); i++) {
+//            if (userList.get(i).getAuthority() != f) {
+//                userList.remove(i);
+//                i--;
+//            }
+//        }
 
         PageInfo res = new PageInfo(userList);
 

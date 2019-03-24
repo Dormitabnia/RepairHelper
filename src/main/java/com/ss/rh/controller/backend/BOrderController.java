@@ -4,6 +4,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ss.rh.annotation.BLoginRequired;
 import com.ss.rh.entity.Order;
+import com.ss.rh.entity.OrderExample;
+import com.ss.rh.service.MethodReflactService;
 import com.ss.rh.service.OrderService;
 import com.ss.rh.util.JsonUtil;
 import org.slf4j.Logger;
@@ -11,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,10 +24,17 @@ public class BOrderController {
     @Autowired
     OrderService orderService;
 
+    @Autowired
+    MethodReflactService methodReflactService;
+
     /*
     获取报修信息列表
-    参数：
-     */
+    @param page:获取的页数
+    @param size:每页的数量
+    @param qt:查询的字段
+    @param q:查询的条件
+    @param f:查询的报修信息状态
+    */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/repairationList")
     public String getOrder(@RequestParam("page") int page, @RequestParam("size") int size,
@@ -37,35 +44,51 @@ public class BOrderController {
         PageHelper.startPage(page, size);
         List<Order> orderList;
 
-        if (qt.isEmpty() && q.isEmpty())
-            orderList = orderService.getAllOrders();
-        else if (qt == "id") {
-            orderList = new ArrayList<>();
-            orderList.add(orderService.getOrderById(Integer.parseInt(q)));
-        }
-        else {
-            try {
-                Class cl = Order.class;
-                Field field = cl.getDeclaredField(qt);
-                String fieldType = field.getGenericType().toString();
+        try {
+            OrderExample orderExample = methodReflactService.getOrderExample(qt, q, status);
+            orderList = orderService.getOrdersByExample(orderExample);
 
-                orderList = orderService.getOrdersLike(qt, q, fieldType.equals("class java.lang.String"));
+        } catch (NoSuchMethodException e) {
+            return JsonUtil.failure("method非法字段");
 
-            } catch (NoSuchMethodException e) {
-                return JsonUtil.failure("method非法字段");
-            } catch (NoSuchFieldException e) {
-                return JsonUtil.failure("field非法字段");
-            } catch (Exception e) {
-                return JsonUtil.failure("查找失败");
-            }
+        } catch (NoSuchFieldException e) {
+            return JsonUtil.failure("field非法字段");
+
+        } catch (Exception e) {
+            return JsonUtil.failure("查找失败");
+
         }
 
-        for (int i = 0; i < orderList.size(); i++) {
-            if (!orderList.get(i).getStatus().equals(status)) {
-                orderList.remove(i);
-                i--;
-            }
-        }
+//        if (qt.isEmpty() && q.isEmpty()) {
+//            orderList = orderService.getAllOrders();
+//        }
+//        else if (qt.equals("id")) {
+//            orderList = new ArrayList<>();
+//            orderList.add(orderService.getOrderById(Integer.parseInt(q)));
+//        }
+//        else {
+//            try {
+//                Class cl = Order.class;
+//                Field field = cl.getDeclaredField(qt);
+//                String fieldType = field.getGenericType().toString();
+//
+//                orderList = orderService.getOrdersLike(qt, q, fieldType.equals("class java.lang.String"));
+//
+//            } catch (NoSuchMethodException e) {
+//                return JsonUtil.failure("method非法字段");
+//            } catch (NoSuchFieldException e) {
+//                return JsonUtil.failure("field非法字段");
+//            } catch (Exception e) {
+//                return JsonUtil.failure("查找失败");
+//            }
+//        }
+
+//        for (int i = 0; i < orderList.size(); i++) {
+//            if (!orderList.get(i).getStatus().equals(status)) {
+//                orderList.remove(i);
+//                i--;
+//            }
+//        }
 
         PageInfo res = new PageInfo(orderList);
 
