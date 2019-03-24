@@ -6,7 +6,7 @@ import com.ss.rh.annotation.BLoginRequired;
 import com.ss.rh.entity.User;
 import com.ss.rh.entity.UserExample;
 import com.ss.rh.service.AdministratorService;
-import com.ss.rh.service.MethodReflactService;
+import com.ss.rh.service.EntityExampleService;
 import com.ss.rh.service.UserService;
 import com.ss.rh.util.JsonUtil;
 import com.ss.rh.util.TokenUtil;
@@ -32,7 +32,7 @@ public class BUserController {
     TokenUtil tokenUtil;
 
     @Autowired
-    MethodReflactService methodReflactService;
+    EntityExampleService entityExampleService;
 
     /*
     查看所有用户信息
@@ -59,7 +59,7 @@ public class BUserController {
             intF = Integer.parseInt(f);
 
         try {
-            UserExample ue = methodReflactService.getUserExample(qt, q, intF);
+            UserExample ue = entityExampleService.getUserExample(qt, q, intF);
             userList = userService.getUsersByExample(ue);
 
         } catch (NoSuchFieldException e) {

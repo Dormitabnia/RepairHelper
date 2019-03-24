@@ -5,7 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.ss.rh.annotation.BLoginRequired;
 import com.ss.rh.entity.Order;
 import com.ss.rh.entity.OrderExample;
-import com.ss.rh.service.MethodReflactService;
+import com.ss.rh.service.EntityExampleService;
 import com.ss.rh.service.OrderService;
 import com.ss.rh.util.JsonUtil;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class BOrderController {
     OrderService orderService;
 
     @Autowired
-    MethodReflactService methodReflactService;
+    EntityExampleService entityExampleService;
 
     /*
     获取报修信息列表
@@ -45,7 +45,7 @@ public class BOrderController {
         List<Order> orderList;
 
         try {
-            OrderExample orderExample = methodReflactService.getOrderExample(qt, q, status);
+            OrderExample orderExample = entityExampleService.getOrderExample(qt, q, status);
             orderList = orderService.getOrdersByExample(orderExample);
 
         } catch (NoSuchMethodException e) {
