@@ -3,7 +3,6 @@ package com.ss.rh.controller.backend;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ss.rh.annotation.BLoginRequired;
-import com.ss.rh.entity.Administrator;
 import com.ss.rh.entity.User;
 import com.ss.rh.service.AdministratorService;
 import com.ss.rh.service.UserService;
@@ -35,7 +34,7 @@ public class BUserController {
     /*
     查看所有用户信息
      */
-    @BLoginRequired
+//    @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/userList")
     public String getUserList(@RequestParam("page") int page, @RequestParam("size") int size,
                               @RequestParam(value = "qt", required = false) String qt,
@@ -45,8 +44,6 @@ public class BUserController {
 
         List<User> userList;
 
-        logger.info(qt);
-
         if (qt.isEmpty() && q.isEmpty())
             userList = userService.getUserList();
         else if (qt == "id") {
@@ -55,7 +52,7 @@ public class BUserController {
         }
         else {
             try {
-                Class cl = Administrator.class;
+                Class cl = User.class;
                 Field field = cl.getDeclaredField(qt);
                 Class decalringCl = field.getDeclaringClass();
 
