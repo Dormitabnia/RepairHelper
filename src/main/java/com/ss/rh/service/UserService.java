@@ -1,6 +1,7 @@
 package com.ss.rh.service;
 
 import com.ss.rh.entity.User;
+import com.ss.rh.entity.UserExample;
 
 import java.util.List;
 
@@ -16,6 +17,8 @@ public interface UserService {
 
     List<User> getUserList();
 
-    List<User> getUsersLike(String qt, String q, boolean isString) throws Exception;
+//    List<User> getUsersLike(String qt, String q, boolean isString) throws Exception;
+
+    List<User> getUsersByExample(UserExample userExample);
 
 }

@@ -43,31 +43,37 @@ public class UserServiceImpl implements UserService {
         return userMapper.selectByExample(userExample);
     }
 
+//    @Override
+//    public List<User> getUsersLike(String qt, String q, boolean isString) throws Exception {
+//        String qtname;
+//        String qstr = "%" + q + "%";
+//
+//        if(!Character.isUpperCase(qt.charAt(0)))
+//            qtname = new StringBuilder().append(Character.toUpperCase(qt.charAt(0))).append(qt.substring(1)).toString();
+//        else
+//            qtname = qt;
+//
+//        UserExample ue = new UserExample();
+//
+//        Class cl = UserExample.Criteria.class;
+//
+//        Method method;
+//
+//        if (isString) {
+//            method = cl.getMethod("and" + qtname + "Like", String.class);
+//            method.invoke(ue.createCriteria(), qstr);
+//        }
+//        else {
+//            method = cl.getMethod("and" + qtname + "EqualTo", Integer.class);
+//            method.invoke(ue.createCriteria(), Integer.parseInt(q));
+//        }
+//
+//        return userMapper.selectByExample(ue);
+//    }
+
+
     @Override
-    public List<User> getUsersLike(String qt, String q, boolean isString) throws Exception {
-        String qtname;
-        String qstr = "%" + q + "%";
-
-        if(!Character.isUpperCase(qt.charAt(0)))
-            qtname = new StringBuilder().append(Character.toUpperCase(qt.charAt(0))).append(qt.substring(1)).toString();
-        else
-            qtname = qt;
-
-        UserExample ue = new UserExample();
-
-        Class cl = UserExample.Criteria.class;
-
-        Method method;
-
-        if (isString) {
-            method = cl.getMethod("and" + qtname + "Like", String.class);
-            method.invoke(ue.createCriteria(), qstr);
-        }
-        else {
-            method = cl.getMethod("and" + qtname + "EqualTo", Integer.class);
-            method.invoke(ue.createCriteria(), Integer.parseInt(q));
-        }
-
-        return userMapper.selectByExample(ue);
+    public List<User> getUsersByExample(UserExample userExample) {
+        return userMapper.selectByExample(userExample);
     }
 }
