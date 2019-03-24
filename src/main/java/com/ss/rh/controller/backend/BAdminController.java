@@ -54,8 +54,8 @@ public class BAdminController extends BaseRestController {
 
         String token = tokenUtil.createBToken(qAdmin.getId().toString());
 
-        if (redisCacheUtil.existsKey(token))
-            return JsonUtil.failure("Already login", 401);
+//        if (redisCacheUtil.existsKey(token))
+//            return JsonUtil.failure("Already login", 401);
 
         saveSession(qAdmin.getId(), token);
 
