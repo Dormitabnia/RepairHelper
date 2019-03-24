@@ -26,12 +26,14 @@ public class BOrderController {
 
     /*
     获取报修信息列表
+    参数：
      */
     @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/repairationList")
     public String getOrder(@RequestParam("page") int page, @RequestParam("size") int size,
                            @RequestParam(value = "qt", required = false) String qt,
-                           @RequestParam(value = "q", required = false) String q) {
+                           @RequestParam(value = "q", required = false) String q,
+                           @RequestParam(value = "f", required = false) String status) {
         PageHelper.startPage(page, size);
         List<Order> orderList;
 
@@ -55,6 +57,13 @@ public class BOrderController {
                 return JsonUtil.failure("field非法字段");
             } catch (Exception e) {
                 return JsonUtil.failure("查找失败");
+            }
+        }
+
+        for (int i = 0; i < orderList.size(); i++) {
+            if (!orderList.get(i).getStatus().equals(status)) {
+                orderList.remove(i);
+                i--;
             }
         }
 
