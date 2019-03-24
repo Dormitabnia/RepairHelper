@@ -70,27 +70,15 @@ export const constantRouterMap = [
     component: () => import('@/views/errorPage/401'),
     hidden: true
   },
+
+  // Order View
   {
     path: '',
     component: Layout,
-    redirect: '/orders',
-    // children: [
-    //   {
-    //     path: 'dashboard',
-    //     component: () => import('@/views/dashboard/index'),
-    //     name: 'Dashboard',
-    //     meta: { title: 'dashboard', icon: 'dashboard', noCache: true }
-    //   }
-    // ]
-  },
-
-  // ORder View
-  {
-    path: '/orders',
-    component: Layout,
+    redirect: 'orders',
     children: [
       {
-        path: '',
+        path: 'orders',
         component: () => import('@/views/order/OrderTable'),
         name: 'OrderTable',
         meta: {
@@ -100,6 +88,23 @@ export const constantRouterMap = [
       }
     ]
   },
+
+  // ORder View
+  // {
+  //   path: '/orders',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: '',
+  //       component: () => import('@/views/order/OrderTable'),
+  //       name: 'OrderTable',
+  //       meta: {
+  //         title: '订单信息',
+  //         icon: 'table',
+  //       }
+  //     }
+  //   ]
+  // },
 
   // User View
   {
@@ -113,6 +118,23 @@ export const constantRouterMap = [
         meta: {
           title: '用户信息',
           icon: 'user',
+        }
+      }
+    ]
+  },
+
+  // Admin View
+  {
+    path: '/admin',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/admin'),
+        name: 'AdminTable',
+        meta: {
+          title: '管理员信息',
+          icon: 'lock',
         }
       }
     ]
