@@ -34,11 +34,12 @@ public class BUserController {
     /*
     查看所有用户信息
      */
-    @BLoginRequired
+//    @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/userList")
     public String getUserList(@RequestParam("page") int page, @RequestParam("size") int size,
                               @RequestParam(value = "qt", required = false) String qt,
-                              @RequestParam(value = "q", required = false) String q) {
+                              @RequestParam(value = "q", required = false) String q,
+                              @RequestParam(value = "f", required = false) int f) {
 
         PageHelper.startPage(page, size);
 
@@ -61,6 +62,13 @@ public class BUserController {
                 return JsonUtil.failure("非法字段");
             } catch (Exception e) {
                 return JsonUtil.failure("查找失败");
+            }
+        }
+
+        for (int i = 0; i < userList.size(); i++) {
+            if (userList.get(i).getAuthority() != f) {
+                userList.remove(i);
+                i--;
             }
         }
 
