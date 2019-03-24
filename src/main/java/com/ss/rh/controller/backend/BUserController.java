@@ -34,7 +34,7 @@ public class BUserController {
     /*
     查看所有用户信息
      */
-//    @BLoginRequired
+    @BLoginRequired
     @RequestMapping(method = RequestMethod.GET, value = "/backend/userList")
     public String getUserList(@RequestParam("page") int page, @RequestParam("size") int size,
                               @RequestParam(value = "qt", required = false) String qt,
