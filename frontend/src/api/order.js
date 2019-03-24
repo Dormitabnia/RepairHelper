@@ -28,7 +28,7 @@ export function deleteRepairation(id) {
   return request({
     url: '/repairation',
     method: 'delete',
-    data: id,
+    data: { id },
   });
 }
 
