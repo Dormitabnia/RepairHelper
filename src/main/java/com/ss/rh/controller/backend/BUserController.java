@@ -54,9 +54,9 @@ public class BUserController {
             try {
                 Class cl = User.class;
                 Field field = cl.getDeclaredField(qt);
-                Class decalringCl = field.getDeclaringClass();
+                String fieldType = field.getGenericType().toString();
 
-                userList = userService.getUsersLike(qt, q, decalringCl == String.class);
+                userList = userService.getUsersLike(qt, q, fieldType.equals("class java.lang.String"));
             } catch (NoSuchMethodException e) {
                 return JsonUtil.failure("非法字段");
             } catch (Exception e) {

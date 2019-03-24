@@ -45,9 +45,9 @@ public class BOrderController {
             try {
                 Class cl = Order.class;
                 Field field = cl.getDeclaredField(qt);
-                Class decalringCl = field.getDeclaringClass();
+                String fieldType = field.getGenericType().toString();
 
-                orderList = orderService.getOrdersLike(qt, q, decalringCl == String.class);
+                orderList = orderService.getOrdersLike(qt, q, fieldType.equals("class java.lang.String"));
 
             } catch (NoSuchMethodException e) {
                 return JsonUtil.failure("method非法字段");

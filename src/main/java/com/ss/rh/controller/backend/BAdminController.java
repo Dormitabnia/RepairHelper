@@ -101,9 +101,9 @@ public class BAdminController extends BaseRestController {
             try {
                 Class cl = Administrator.class;
                 Field field = cl.getDeclaredField(qt);
-                Class decalringCl = field.getDeclaringClass();
+                String fieldType = field.getGenericType().toString();
 
-                adminList = administratorService.getAdminsLike(qt, q, decalringCl == String.class);
+                adminList = administratorService.getAdminsLike(qt, q, fieldType.equals("class java.lang.String"));
             } catch (NoSuchMethodException e) {
                 return JsonUtil.failure("非法字段");
             } catch (Exception e) {

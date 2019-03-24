@@ -56,9 +56,9 @@ public class BAuthenController {
             try {
                 Class cl = Administrator.class;
                 Field field = cl.getDeclaredField(qt);
-                Class decalringCl = field.getDeclaringClass();
+                String fieldType = field.getGenericType().toString();
 
-                authList = authenticationService.getAuthsLike(qt, q, decalringCl == String.class);
+                authList = authenticationService.getAuthsLike(qt, q, fieldType.equals("class java.lang.String"));
             } catch (NoSuchMethodException e) {
                 return JsonUtil.failure("非法字段");
             } catch (Exception e) {
