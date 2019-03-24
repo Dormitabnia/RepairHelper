@@ -31,12 +31,12 @@
       </el-table-column>
       <el-table-column :label="queryType[1].name" width="150" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.username }}</span>
+          <span>{{ scope.row[queryType[1].value] }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="queryType[2].name" width="150" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.repairName }}</span>
+          <span>{{ scope.row[queryType[2].value] }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="queryType[3].name" align="center">
@@ -64,11 +64,17 @@
         <el-form-item label="ID" prop="id">
           <el-input v-model="temp.id" :disabled="true" />
         </el-form-item>
-        <el-form-item label="用户名" prop="username">
+        <!-- <el-form-item label="用户名" prop="username">
           <el-input v-model="temp.username" />
         </el-form-item>
         <el-form-item label="维修员" prop="repairName">
           <el-input v-model="temp.repairName" />
+        </el-form-item> -->
+        <el-form-item label="用户ID">
+          <el-input v-model="temp.userId" />
+        </el-form-item>
+        <el-form-item label="维修员ID">
+          <el-input v-model="temp.repairId" />
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="temp.status" class="filter-item">
@@ -89,8 +95,11 @@
         <el-row :style="{'margin-bottom': '22px'}" type="flex">
           <label class="el-form-item__label" style="width: 70px;">图片</label>
           <el-carousel :style="{width:'400px'}" :autoplay="false" trigger="click">
-            <el-carousel-item v-for="(img, index) in temp.img" :key="index">
+            <!-- <el-carousel-item v-for="(img, index) in temp.img" :key="index">
               <img :src="img" preview="0" class="img-item-center">
+            </el-carousel-item> -->
+            <el-carousel-item>
+              <img :src="temp.img | imgFilter" preview="0" class="img-item-center">
             </el-carousel-item>
           </el-carousel>
         </el-row>
@@ -153,16 +162,30 @@ const ORDER = {
     export: true,
     editable: true,
   },
-  USERNAME: {
-    name: '用户名',
-    value: 'username',
+  // USERNAME: {
+  //   name: '用户名',
+  //   value: 'username',
+  //   search: true,
+  //   export: true,
+  //   editable: true,
+  // },
+  // REPAIRNAME: {
+  //   name: '维修员',
+  //   value: 'repairName',
+  //   search: true,
+  //   export: true,
+  //   editable: true,
+  // },
+  USERID: {
+    name: '用户ID',
+    value: 'userId',
     search: true,
     export: true,
     editable: true,
   },
-  REPAIRNAME: {
-    name: '维修员',
-    value: 'repairName',
+  REPAIRID: {
+    name: '维修员ID',
+    value: 'repairId',
     search: true,
     export: true,
     editable: true,
@@ -172,7 +195,7 @@ const ORDER = {
     value: 'equipInfo',
     search: false,
     export: true,
-    editable: false,
+    editable: true,
   },
   FAULTINFO: {
     name: '故障信息',
@@ -246,6 +269,9 @@ export default {
       }
       return info.slice(0, 32) + '...';
     },
+    imgFilter(src) {
+      return `/media/${src}`;
+    }
   },
   data() {
     return {
@@ -459,27 +485,27 @@ export default {
       }))
     },
     beforeDialogOpen() {
-      console.log('Dialog is openning');
+      // console.log('Dialog is openning');
 
-      setTimeout(() => {
-        const wavesurfer = window.WaveSurfer.create({
-          container: '#waveform',
-          waveColor: 'violet',
-          progressColor: 'purple',
-        });
-        console.log('isLoading');
-        wavesurfer.load('/static/sound/test-1.mp3');
-      }, 500);
+      // setTimeout(() => {
+      //   const wavesurfer = window.WaveSurfer.create({
+      //     container: '#waveform',
+      //     waveColor: 'violet',
+      //     progressColor: 'purple',
+      //   });
+      //   console.log('isLoading');
+      //   wavesurfer.load('/static/sound/test-1.mp3');
+      // }, 500);
     },
     afterDialogOpen() {
-      console.log('Dialog is opened');
-      const wavesurfer = window.WaveSurfer.create({
-        container: 'waveform',
-        waveColor: 'violet',
-        progressColor: 'purple',
-      });
-      console.log('isLoading');
-      wavesurfer.load('/static/sound/test-1.mp3');
+      // console.log('Dialog is opened');
+      // const wavesurfer = window.WaveSurfer.create({
+      //   container: 'waveform',
+      //   waveColor: 'violet',
+      //   progressColor: 'purple',
+      // });
+      // console.log('isLoading');
+      // wavesurfer.load('/static/sound/test-1.mp3');
     }
   }
 }
