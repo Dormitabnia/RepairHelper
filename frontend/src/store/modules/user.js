@@ -1,7 +1,7 @@
 import { loginByUsername, logout, getUserInfo } from '@/api/login'
 // import { getToken, setToken, removeToken } from '@/utils/auth'
 import { getToken, setToken, removeToken } from '@/utils/tokenStorage'
-import { parseJwt } from '@/utils/jwt'
+// import { parseJwt } from '@/utils/jwt'
 
 const user = {
   state: {
@@ -9,7 +9,8 @@ const user = {
     status: '',
     code: '',
     token: getToken(),
-    name: getToken() ? parseJwt(getToken()).name : '',
+    // name: getToken() ? parseJwt(getToken()).name : 'Root',
+    name: 'Root',
     avatar: '',
     introduction: '',
     roles: [],
@@ -56,10 +57,10 @@ const user = {
           commit('SET_TOKEN', data)
           setToken(data)
 
-          const jwtPayload = parseJwt(data);
-          console.log(jwtPayload);
+          // const jwtPayload = parseJwt(data.token);
+          // console.log(jwtPayload);
 
-          commit('SET_NAME', jwtPayload.name);
+          // commit('SET_NAME', jwtPayload.name);
 
           // if (jwtPayload.roles && jwtPayload.roles.length > 0) { // 验证返回的roles是否是一个非空数组
           //   commit('SET_ROLES', jwtPayload.roles)
@@ -78,7 +79,8 @@ const user = {
     GetUserRoles({ commit, state }) {
       return new Promise((resolve, reject) => {
         if (state.roles.length === 0) {
-          const jwtPayload = parseJwt(state.token)
+          // const jwtPayload = parseJwt(state.token)
+          const jwtPayload = { role: ['root'] };
 
           if (jwtPayload.role && jwtPayload.role.length > 0) { // 验证返回的roles是否是一个非空数组
             commit('SET_ROLES', jwtPayload.role)
