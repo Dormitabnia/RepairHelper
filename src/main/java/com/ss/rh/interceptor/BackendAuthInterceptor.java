@@ -53,7 +53,7 @@ public class BackendAuthInterceptor implements HandlerInterceptor {
 
         if (token == null) {
             PrintWriter pw = response.getWriter();
-            pw.write(JsonUtil.failure("找不到token"));
+            pw.write(JsonUtil.failure("找不到token",403));
             pw.flush();
             pw.close();
             return false;
