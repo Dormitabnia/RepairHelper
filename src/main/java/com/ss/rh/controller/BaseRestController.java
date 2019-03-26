@@ -28,6 +28,9 @@ public class BaseRestController {
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String hToken = request.getHeader(configProperties.getWX_TOKEN_NAME());
 
+        if (hToken == null)
+            hToken = request.getHeader(configProperties.getBK_TOKEN_NAME());
+
         if (hToken != null) {
             return hToken;
         }
