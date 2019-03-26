@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -104,5 +105,31 @@ public class JournalController extends BaseRestController {
             return JsonUtil.failure("delete failure", 500);
         else
             return JsonUtil.success("delete success");
+    }
+
+    @LoginRequired
+    @RequestMapping(method = RequestMethod.POST, value = "/journal")
+    public String createJournal(@RequestBody Journal journal) {
+
+        if (journal.getOrderId() == null)
+            return JsonUtil.failure("维修信息id不能为空");
+        if (journal.getContent().isEmpty())
+            return JsonUtil.failure("内容不能为空");
+
+        Journal n_journal = new Journal();
+
+        User user = getSessionUser();
+
+        n_journal.setOrderId(journal.getOrderId());
+        n_journal.setUserId(user.getId());
+        n_journal.setContent(journal.getContent());
+        n_journal.setCreateTime(new Date());
+
+        boolean flag = journalService.insertJournal(n_journal);
+
+        if (flag)
+            return JsonUtil.success("create success");
+        else
+            return JsonUtil.failure("create failure");
     }
 }
