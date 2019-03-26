@@ -2,6 +2,7 @@ package com.ss.rh.service.impl;
 
 import com.ss.rh.entity.Order;
 import com.ss.rh.entity.OrderExample;
+import com.ss.rh.entity.User;
 import com.ss.rh.entity.UserExample;
 import com.ss.rh.service.EntityExampleService;
 import org.springframework.stereotype.Service;
@@ -76,10 +77,10 @@ public class EntityExampleServiceImpl implements EntityExampleService {
             else
                 qtname = qt;
 
-            Class cl = OrderExample.Criteria.class;
+            Class cl = UserExample.Criteria.class;
 
-            Class orderClass = Order.class;
-            Field field = orderClass.getDeclaredField(qt);  // throws NoSuchFieldException
+            Class userClass = User.class;
+            Field field = userClass.getDeclaredField(qt);  // throws NoSuchFieldException
             String fieldType = field.getGenericType().toString();
 
             boolean isString = fieldType.equals("class java.lang.String");
