@@ -46,17 +46,6 @@ public class JournalController extends BaseRestController {
 
                 User repairer = userService.getUserById(journal.getUserId());
 
-                String ctStr = "";
-                DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                try {
-                    ctStr = sdf.format(journal.getCreateTime());
-                    logger.info(ctStr);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                journalMap.put("createTime", ctStr);
-
                 journalMap.put("userName", repairer.getName());
 
                 journalRes.add(journalMap);
