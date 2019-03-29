@@ -8,9 +8,13 @@ import com.ss.rh.entity.User;
 import com.ss.rh.service.JournalService;
 import com.ss.rh.service.UserService;
 import com.ss.rh.util.JsonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +22,7 @@ import java.util.Map;
 
 @RestController
 public class JournalController extends BaseRestController {
+    private final static Logger logger = LoggerFactory.getLogger(JournalController.class);
 
     @Autowired
     JournalService journalService;
@@ -40,6 +45,17 @@ public class JournalController extends BaseRestController {
                 Map<String, Object> journalMap = JsonUtil.json2Map(JsonUtil.object2JsonStr(journal));
 
                 User repairer = userService.getUserById(journal.getUserId());
+
+                String ctStr = "";
+                DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                try {
+                    ctStr = sdf.format(journal.getCreateTime());
+                    logger.info(ctStr);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                journalMap.put("createTime", ctStr);
 
                 journalMap.put("userName", repairer.getName());
 
