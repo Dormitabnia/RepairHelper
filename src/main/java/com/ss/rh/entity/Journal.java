@@ -1,5 +1,7 @@
 package com.ss.rh.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.util.Date;
 
 public class Journal {
@@ -33,6 +35,7 @@ public class Journal {
      *
      * @mbggenerated
      */
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
