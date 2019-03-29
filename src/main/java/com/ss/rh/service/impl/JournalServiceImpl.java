@@ -19,6 +19,7 @@ public class JournalServiceImpl implements JournalService {
     public List<Journal> getJournalsByRid(int rid) {
         JournalExample je = new JournalExample();
         je.createCriteria().andOrderIdEqualTo(rid);
+        je.setOrderByClause("createTime");
 
         return journalMapper.selectByExample(je);
     }
