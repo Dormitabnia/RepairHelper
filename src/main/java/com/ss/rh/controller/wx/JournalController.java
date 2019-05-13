@@ -88,6 +88,8 @@ public class JournalController extends BaseRestController {
         User user = getSessionUser();
 
         if (user.getAuthority() <= 1) {
+            journal.setUserId(user.getId());
+            journal.setCreateTime(new Date());
             boolean flag = journalService.updateJournal(journal);
 
             if (flag)
