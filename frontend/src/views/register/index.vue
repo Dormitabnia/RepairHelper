@@ -58,14 +58,21 @@
 </template>
 
 <script>
-import { isvalidUsername } from '@/utils/validate';
+// import { isvalidUsername } from '@/utils/validate';
 import { register } from '@/api/register';
 
 export default {
   name: 'Register',
   data() {
+    // const validateUsername = (rule, value, callback) => {
+    //   if (!isvalidUsername(value)) {
+    //     callback(new Error('用户名不能为空'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     const validateUsername = (rule, value, callback) => {
-      if (!isvalidUsername(value)) {
+      if (value === '') {
         callback(new Error('用户名不能为空'))
       } else {
         callback()

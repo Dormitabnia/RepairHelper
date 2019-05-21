@@ -112,7 +112,7 @@ export const constantRouterMap = [
     component: Layout,
     children: [
       {
-        path: '',
+        path: 'index',
         component: () => import('@/views/user/UserTable'),
         name: 'UserTable',
         meta: {
@@ -129,7 +129,7 @@ export const constantRouterMap = [
     component: Layout,
     children: [
       {
-        path: '',
+        path: 'index',
         component: () => import('@/views/admin'),
         name: 'AdminTable',
         meta: {
@@ -146,7 +146,7 @@ export const constantRouterMap = [
     component: Layout,
     children: [
       {
-        path: '',
+        path: 'index',
         component: () => import('@/views/uploadExcel'),
         name: 'UploadExcel',
         meta: {

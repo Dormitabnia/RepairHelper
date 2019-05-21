@@ -151,19 +151,25 @@ export default {
   filters: {
     roleTagFilter(type) {
       const tagMap = {
-        [`${ROLE.ROOT}`]: 'danger',
-        [`${ROLE.ADMIN}`]: 'danger',
+        // [`${ROLE.ROOT}`]: 'danger',
+        // [`${ROLE.ADMIN}`]: 'danger',
         [`${ROLE.FIXER}`]: 'success',
-        [`${ROLE.USER}`]: '',
-        [`${ROLE.PENDING}`]: 'info',
+        [`${ROLE.ORDERER}`]: 'success',
+        [`${ROLE.USER}`]: 'primary',
+        // [`${ROLE.PENDING}`]: 'info',
       }
-      return tagMap[type];
+      return tagMap[type] || 'info';
     },
     typeFilter(type) {
-      if (+type >= ROLE.PENDING) {
-        type = ROLE.PENDING;
+      // if (+type >= ROLE.PENDING) {
+      //   type = ROLE.PENDING;
+      // }
+
+      if (ROLE.prop[type]) {
+        return ROLE.prop[type].name;
+      } else {
+        return '未定义';
       }
-      return ROLE.prop[type].name;
     }
   },
   data() {

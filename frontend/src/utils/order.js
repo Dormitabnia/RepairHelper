@@ -7,16 +7,30 @@ const ORDER = {
     export: true,
     editable: true,
   },
-  USERNAME: {
-    name: '用户名',
-    value: 'username',
+  // USERNAME: {
+  //   name: '用户名',
+  //   value: 'username',
+  //   search: true,
+  //   export: true,
+  //   editable: true,
+  // },
+  // REPAIRNAME: {
+  //   name: '维修员',
+  //   value: 'repairName',
+  //   search: true,
+  //   export: true,
+  //   editable: true,
+  // },
+  USERID: {
+    name: '用户ID',
+    value: 'userId',
     search: true,
     export: true,
     editable: true,
   },
-  REPAIRNAME: {
-    name: '维修员',
-    value: 'repairName',
+  REPAIRID: {
+    name: '维修员ID',
+    value: 'repairId',
     search: true,
     export: true,
     editable: true,

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
 import store from '@/store'
-import { getToken } from '@/utils/tokenStorage'
+import { getToken, removeToken } from '@/utils/tokenStorage'
 
 // create an axios instance
 const service = axios.create({
@@ -38,6 +38,12 @@ service.interceptors.response.use(
         type: 'error',
         duration: 3 * 1000,
       });
+
+      if (response.data.code === 403) {
+        store.commit('SET_TOKEN', null);
+        store.commit('SET_ROLES', []);
+        removeToken();
+      }
 
       return Promise.reject(new Error(response.data.msg));
     }

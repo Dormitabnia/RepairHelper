@@ -229,16 +229,20 @@ const ORDER = {
 
 const STATUS = {
   UNDO: {
-    name: '未处理',
-    value: '未处理',
+    name: '报修等待',
+    value: '报修等待',
+  },
+  CONFIRM: {
+    name: '报修确认',
+    value: '报修确认',
   },
   DOING: {
-    name: '处理中',
-    value: '处理中',
+    name: '维修处理',
+    value: '维修处理',
   },
   DONE: {
-    name: '已处理',
-    value: '已处理',
+    name: '处理完毕',
+    value: '处理完毕',
   },
 }
 
@@ -255,7 +259,8 @@ export default {
     statusFilter(status) {
       const statusMap = {
         [`${STATUS.UNDO.value}`]: 'danger',
-        [`${STATUS.DOING.value}`]: 'info',
+        [`${STATUS.CONFIRM.value}`]: 'info',
+        [`${STATUS.DOING.value}`]: '',
         [`${STATUS.DONE.value}`]: 'success',
       }
       return statusMap[status]

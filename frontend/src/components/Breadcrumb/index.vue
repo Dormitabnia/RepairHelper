@@ -30,15 +30,15 @@ export default {
   methods: {
     generateTitle,
     getBreadcrumb() {
-      let matched = this.$route.matched.filter(item => {
+      const matched = this.$route.matched.filter(item => {
         if (item.name) {
           return true
         }
       })
-      const first = matched[0]
-      if (first && first.name.trim().toLocaleLowerCase() !== 'Dashboard'.toLocaleLowerCase()) {
-        matched = [{ path: '/dashboard', meta: { title: 'dashboard' }}].concat(matched)
-      }
+      // const first = matched[0]
+      // if (first && first.name.trim().toLocaleLowerCase() !== 'Dashboard'.toLocaleLowerCase()) {
+      //   matched = [{ path: '/dashboard', meta: { title: 'dashboard' }}].concat(matched)
+      // }
       this.levelList = matched
     },
     pathCompile(path) {

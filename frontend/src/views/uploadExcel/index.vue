@@ -82,7 +82,7 @@ export default {
 
       this.posting = true;
       const requestList = this.postData.map(v => {
-        return addRepairation(v);
+        return addRepairation(v).catch(e => console.error(e));
       });
 
       Promise.all(requestList).then(() => {

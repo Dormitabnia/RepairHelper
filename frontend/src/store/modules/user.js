@@ -54,8 +54,10 @@ const user = {
         loginByUsername(username, userInfo.password).then(data => {
           // const data = response.data
           // 设置 Token
-          commit('SET_TOKEN', data)
-          setToken(data)
+          if (data) {
+            commit('SET_TOKEN', data)
+            setToken(data)
+          }
 
           // const jwtPayload = parseJwt(data.token);
           // console.log(jwtPayload);
@@ -126,7 +128,10 @@ const user = {
     // },
 
     // 登出
-    LogOut({ commit, state }) {
+    LogOut({ dispatch, commit, state }) {
+      // fed logout
+      dispatch('FedLogOut');
+
       return new Promise((resolve, reject) => {
         logout(state.name).then(() => {
           commit('SET_TOKEN', '')

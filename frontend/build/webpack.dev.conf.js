@@ -60,6 +60,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       title: 'vue-element-admin',
       templateParameters: {
         BASE_URL: config.dev.assetsPublicPath + config.dev.assetsSubDirectory,
+        isProd: process.env.NODE_ENV === 'production' ? true : false,
       },
     }),
   ]
