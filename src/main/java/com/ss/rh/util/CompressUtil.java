@@ -1,10 +1,13 @@
 package com.ss.rh.util;
 
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 
 /*
 进行二维码信息字符串（解）压缩的工具类
  */
+@Component
 public class CompressUtil {
     public HashMap<String, Integer> table= new HashMap<String, Integer>();
     private String[] Array_char;
@@ -62,27 +65,27 @@ public class CompressUtil {
         }
         count = 256;
 
-        String result="";
+        String result = "";
         int pro, las;
-        int point=0;
+        int point = 0;
 
         pro=input.charAt(point++);
-        result=result+Array_char[pro];
+        result = result+Array_char[pro];
 
         while (point<input.length()) {
-            las=input.charAt(point++);
+            las = input.charAt(point++);
 
             if (las>=count) {   //不存在
-                Array_char[count]=Array_char[pro]+Array_char[pro].charAt(0);
-                result=result+Array_char[pro]+Array_char[pro].charAt(0);
+                Array_char[count] = Array_char[pro] + Array_char[pro].charAt(0);
+                result = result + Array_char[pro] + Array_char[pro].charAt(0);
 
             }
             else {
-                Array_char[count] = Array_char[pro]+ Array_char[las].charAt(0);
-                result=result+Array_char[las];
+                Array_char[count] = Array_char[pro] + Array_char[las].charAt(0);
+                result = result + Array_char[las];
             }
             count++;
-            pro=las;
+            pro = las;
         }
         return result;
     }
