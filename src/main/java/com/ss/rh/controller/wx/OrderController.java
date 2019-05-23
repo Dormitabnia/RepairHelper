@@ -7,6 +7,7 @@ import com.ss.rh.entity.Order;
 import com.ss.rh.entity.User;
 import com.ss.rh.service.OrderService;
 import com.ss.rh.service.UserService;
+import com.ss.rh.util.CompressUtil;
 import com.ss.rh.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,9 @@ public class OrderController extends BaseRestController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    CompressUtil compressUtil;
 
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
@@ -102,6 +106,9 @@ public class OrderController extends BaseRestController {
         Order order = new Order();
         User user = getSessionUser();
 
+        // 进行设备信息解压缩
+//        String decEquipInfo = compressUtil.lZW_Decompress(orderPost.getEquipInfo());
+
         order.setEquipInfo(orderPost.getEquipInfo());
         order.setFaultInfo(orderPost.getFaultInfo());
         order.setUserId(user.getId());
@@ -142,6 +149,14 @@ public class OrderController extends BaseRestController {
             q_order.setStatus(status);
             return orderService.updateOrder(q_order) ? JsonUtil.success("修改成功") : JsonUtil.failure("修改失败");
         }
+    }
+
+    /*
+    二维码信息解压缩
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/equipInfo")
+    public String decompressInfo(@RequestParam("2cInfo") String raw) {
+        return compressUtil.lZW_Decompress(raw);
     }
 
     /*
