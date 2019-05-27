@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +48,16 @@ public class BOrderController {
         try {
             OrderExample orderExample = entityExampleService.getOrderExample(qt, q, status);
             orderList = orderService.getOrdersByExample(orderExample);
+
+            orderList.sort(new Comparator<Order>() {
+                @Override
+                public int compare(Order o1, Order o2) {
+                    if (o1.getId() > o2.getId())
+                        return -1;
+                    else
+                        return 1;
+                }
+            });
 
         } catch (NoSuchMethodException e) {
             return JsonUtil.failure("method非法字段");

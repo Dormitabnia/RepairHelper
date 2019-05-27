@@ -14,9 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class OrderController extends BaseRestController {
@@ -39,6 +37,7 @@ public class OrderController extends BaseRestController {
     @RequestMapping(method = RequestMethod.GET, value = "/repairationList")
     public String getOrderList() {
         User user = getSessionUser();
+
         int uid = 0;
 
         if (user.getAuthority() == Constants.ORDINARY)
@@ -62,6 +61,16 @@ public class OrderController extends BaseRestController {
 
             results.add(orderMap);
         }
+
+        orders.sort(new Comparator<Order>() {
+            @Override
+            public int compare(Order o1, Order o2) {
+                if (o1.getId() > o2.getId())
+                    return -1;
+                else
+                    return 1;
+            }
+        });
 
         return JsonUtil.success("query success", orders);
     }
