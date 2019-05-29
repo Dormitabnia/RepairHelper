@@ -57,6 +57,8 @@ public class EntityExampleServiceImpl implements EntityExampleService {
             oe.createCriteria().andStatusEqualTo(status);
         }
 
+        oe.setOrderByClause("id desc");
+
         return oe;
     }
 
