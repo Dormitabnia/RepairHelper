@@ -148,4 +148,23 @@ public class BUserController {
         else
             return JsonUtil.success("delete success");
     }
+
+    /*
+    增加用户
+     */
+    @BLoginRequired
+    @RequestMapping(method = RequestMethod.POST, value = "/backend/userInfo")
+    public String addUser(@RequestBody User user) {
+        if (user.getCompany() == null)
+            user.setCompany("未设置");
+        if (user.getPhone() == null)
+            user.setPhone("未设置");
+
+        boolean flag = userService.insertUser(user);
+
+        if (flag)
+            return JsonUtil.success("insert success");
+        else
+            return JsonUtil.failure("insert failure");
+    }
 }
