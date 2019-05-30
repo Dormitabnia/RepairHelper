@@ -82,7 +82,9 @@ public class BOrderController {
 
         }
 
-        PageInfo res = new PageInfo(results);
+        PageInfo res = new PageInfo(orderList);
+        res.setList(results);
+//        PageInfo res = new PageInfo(results);
 
         return JsonUtil.success("query success", res);
     }
