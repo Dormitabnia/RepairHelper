@@ -165,7 +165,7 @@ public class OrderController extends BaseRestController {
      */
     @RequestMapping(method = RequestMethod.GET, value = "/equipInfo")
     public String decompressInfo(@RequestParam("2cInfo") String raw) {
-        return compressUtil.lZW_Decompress(raw);
+        return JsonUtil.success("success", compressUtil.lZW_Decompress(raw));
     }
 
     /*
