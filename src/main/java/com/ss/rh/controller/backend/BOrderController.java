@@ -7,12 +7,14 @@ import com.ss.rh.entity.Order;
 import com.ss.rh.entity.OrderExample;
 import com.ss.rh.service.EntityExampleService;
 import com.ss.rh.service.OrderService;
+import com.ss.rh.service.UserService;
 import com.ss.rh.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,9 @@ public class BOrderController {
 
     @Autowired
     EntityExampleService entityExampleService;
+
+    @Autowired
+    UserService userService;
 
     /*
     获取报修信息列表
@@ -44,20 +49,27 @@ public class BOrderController {
                            @RequestParam(value = "f", required = false) String status) {
         PageHelper.startPage(page, size);
         List<Order> orderList;
+        List<Map<String, Object>> results = new ArrayList<>();
 
         try {
             OrderExample orderExample = entityExampleService.getOrderExample(qt, q, status);
             orderList = orderService.getOrdersByExample(orderExample);
 
-//            orderList.sort(new Comparator<Order>() {
-//                @Override
-//                public int compare(Order o1, Order o2) {
-//                    if (o1.getId() > o2.getId())
-//                        return -1;
-//                    else
-//                        return 1;
-//                }
-//            });
+            for (Order order : orderList) {
+                Map<String, Object> orderMap = JsonUtil.json2Map(JsonUtil.object2JsonStr(order));
+
+                // 根据id获取维修员姓名
+                if (order.getRepairId() != null) {
+                    String repairer = userService.getUserById(order.getRepairId()).getName();
+                    orderMap.put("repairer", repairer);
+                }
+                else
+                    orderMap.put("repairer", "未分配");
+                String submitter = userService.getUserById(order.getUserId()).getName();
+                orderMap.put("submitter", submitter);
+
+                results.add(orderMap);
+            }
 
         } catch (NoSuchMethodException e) {
             return JsonUtil.failure("method非法字段");
@@ -70,38 +82,7 @@ public class BOrderController {
 
         }
 
-//        if (qt.isEmpty() && q.isEmpty()) {
-//            orderList = orderService.getAllOrders();
-//        }
-//        else if (qt.equals("id")) {
-//            orderList = new ArrayList<>();
-//            orderList.add(orderService.getOrderById(Integer.parseInt(q)));
-//        }
-//        else {
-//            try {
-//                Class cl = Order.class;
-//                Field field = cl.getDeclaredField(qt);
-//                String fieldType = field.getGenericType().toString();
-//
-//                orderList = orderService.getOrdersLike(qt, q, fieldType.equals("class java.lang.String"));
-//
-//            } catch (NoSuchMethodException e) {
-//                return JsonUtil.failure("method非法字段");
-//            } catch (NoSuchFieldException e) {
-//                return JsonUtil.failure("field非法字段");
-//            } catch (Exception e) {
-//                return JsonUtil.failure("查找失败");
-//            }
-//        }
-
-//        for (int i = 0; i < orderList.size(); i++) {
-//            if (!orderList.get(i).getStatus().equals(status)) {
-//                orderList.remove(i);
-//                i--;
-//            }
-//        }
-
-        PageInfo res = new PageInfo(orderList);
+        PageInfo res = new PageInfo(results);
 
         return JsonUtil.success("query success", res);
     }
