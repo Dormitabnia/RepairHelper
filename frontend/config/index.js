@@ -12,7 +12,8 @@ module.exports = {
     proxyTable: {
       '/api/**' : {
         // target: 'http://localhost:8081',
-        target: 'http://yapi.demo.qunar.com/mock/30556',
+        // target: 'http://yapi.demo.qunar.com/mock/30556',
+        target: 'https://www.easy-mock.com/mock/5cebbf4198affa1ca40ec553/sonoscape',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''
