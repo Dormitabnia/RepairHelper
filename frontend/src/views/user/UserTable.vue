@@ -10,7 +10,8 @@
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">{{ $t('table.export') }}</el-button>
-      <el-checkbox v-model="showDelete" class="filter-item red-check" style="margin-left:15px;" @change="tableKey=tableKey+1">{{ '删除' }}</el-checkbox>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-upload" @click="handleUploadBtn">导入</el-button>
+      <el-checkbox v-model="showEdit" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">编辑</el-checkbox>
     </div>
 
     <el-table
@@ -47,8 +48,10 @@
           <el-tag :type="scope.row.authority | roleTagFilter">{{ scope.row.authority | typeFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="showDelete" label="操作" width="110px" align="center">
+      <el-table-column v-if="showEdit" label="操作" width="160px" align="center">
         <template slot-scope="scope">
+          <el-button size="mini" type="primary" @click="handleUpdate(scope.row)">{{ '编辑' }}
+          </el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.row)">{{ '删除' }}
           </el-button>
         </template>
@@ -104,14 +107,23 @@
         <el-button :loading="downloadLoading" type="success" plain icon="el-icon-download" @click="handleExport">导出</el-button>
       </el-row>
     </el-dialog>
+
+    <!-- 上传 Excel -->
+    <el-dialog :visible.sync="uploadDialogVisible" title="上传 Excel">
+      <upload-excel-component :on-success="handleUploadSuccess" :before-upload="beforeUpload" />
+      <el-button :disabled="tableData.length===0" :type="postBtnType" :loading="posting" style="margin: 20px auto 0; display: block" plain @click="handleUpload" >{{ postText }}</el-button>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
-import { fetchUserList, updateUserInfo, deleteUser } from '@/api/user'
+import { fetchUserList, updateUserInfo, deleteUser, addUser } from '@/api/user'
 import waves from '@/directive/waves' // Waves directive
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import ROLE from '@/utils/role'
+import USER from '@/utils/user';
+import UploadExcelComponent from '@/components/UploadExcel';
 
 const userType = Object.values(ROLE);
 
@@ -142,11 +154,12 @@ Object.defineProperty(tableCol, 'AUTHORITY', {
   enumerable: false,
 })
 
-const queryType = Object.values(tableCol);
+// const queryType = Object.values(tableCol);
+const queryType = Object.values(USER).filter(v => v.search);
 
 export default {
   name: 'UserTable',
-  components: { Pagination },
+  components: { Pagination, UploadExcelComponent },
   directives: { waves },
   filters: {
     roleTagFilter(type) {
@@ -188,7 +201,7 @@ export default {
       userType,
       tableCol,
       queryType,
-      showDelete: false,
+      showEdit: false,
       temp: {
         id: undefined,
         name: '',
@@ -214,7 +227,25 @@ export default {
       downloadLoading: false,
       exportDialogVisible: false,
       exportPage: undefined,
+
+      uploadDialogVisible: false,
+      uploadDisable: true,
+      // 上传 Excel 相关
+      tableData: [],
+      tableHeader: [],
+      postData: [],
+      uploadDone: false,
+      postDone: false,
+      posting: false,
     }
+  },
+  computed: {
+    postText() {
+      return this.postDone ? '上传完成' : '上传';
+    },
+    postBtnType() {
+      return this.postDone ? 'success' : 'primary';
+    },
   },
   created() {
     this.getList()
@@ -338,7 +369,7 @@ export default {
 
       // 并发请求
       const fetchingList = new Array(this.exportPage).fill(0).map((v, i) => {
-        return fetchUserList(Object.assign(this.listQuery, { page: i })).then(data => {
+        return fetchUserList(Object.assign({}, this.listQuery, { page: i + 1 })).then(data => {
           exportData = exportData.concat(data.list);
         })
       });
@@ -375,6 +406,68 @@ export default {
         // return v[j]
       }))
     },
+
+    // 上传 Excel 相关
+    beforeUpload(file) {
+      const isLt1M = file.size / 1024 / 1024 < 1
+
+      if (isLt1M) {
+        return true
+      }
+
+      this.$message({
+        message: '不要选择大于 1M 的文件',
+        type: 'warning'
+      })
+      return false
+    },
+    handleUploadSuccess({ results, header }) {
+      this.tableData = results
+      this.tableHeader = header
+      this.dataFilter();
+
+      this.posting = false;
+      this.postDone = false;
+    },
+    dataFilter() {
+      const temp = this.tableData.map((row, i) => {
+        const o = {};
+        Object.values(USER).map(v => {
+          if (row.hasOwnProperty(v.name)) {
+            o[v.value] = row[v.name];
+
+            // 用户类型过滤
+            if (v.name === USER.AUTHORITY.name) {
+              o[v.value] = Object.values(ROLE.prop).find(item => item.name === row[v.name]).value;
+            }
+          }
+        });
+        return o;
+      })
+
+      this.postData = temp;
+      console.log(this.postData);
+    },
+    handleUpload() {
+      if (this.postDone) {
+        return;
+      }
+
+      this.posting = true;
+      const requestList = this.postData.map(v => {
+        return addUser(v).catch(e => console.error(e));
+      });
+
+      Promise.all(requestList).then(() => {
+        this.posting = false;
+        this.postDone = true;
+        // 手动刷新
+        this.getList();
+      });
+    },
+    handleUploadBtn() {
+      this.uploadDialogVisible = true;
+    }
   }
 }
 </script>

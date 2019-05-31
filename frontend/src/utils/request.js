@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
 import store from '@/store'
+import router from '@/router';
 import { getToken, removeToken } from '@/utils/tokenStorage'
 
 // create an axios instance
@@ -43,6 +44,9 @@ service.interceptors.response.use(
         store.commit('SET_TOKEN', null);
         store.commit('SET_ROLES', []);
         removeToken();
+
+        // 路由重定向
+        router.push('/login');
       }
 
       return Promise.reject(new Error(response.data.msg));

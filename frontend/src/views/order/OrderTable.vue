@@ -11,7 +11,8 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
       <!-- <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button> -->
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">{{ $t('table.export') }}</el-button>
-      <el-checkbox v-model="showDelete" class="filter-item red-check" style="margin-left:15px;" @change="tableKey=tableKey+1">{{ '删除' }}</el-checkbox>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-upload" @click="handleUploadBtn">导入</el-button>
+      <el-checkbox v-model="showEdit" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">编辑</el-checkbox>
     </div>
 
     <el-table
@@ -29,9 +30,19 @@
           <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.id }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="ORDER.USERNAME.name" width="150" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row[ORDER.USERNAME.value] }}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="queryType[1].name" width="150" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row[queryType[1].value] }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="ORDER.REPAIRNAME.name" width="150" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row[ORDER.REPAIRNAME.value] }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="queryType[2].name" width="150" align="center">
@@ -49,8 +60,10 @@
           <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="showDelete" label="操作" width="110px" align="center">
+      <el-table-column v-if="showEdit" label="操作" width="160px" align="center">
         <template slot-scope="scope">
+          <el-button size="mini" type="primary" @click="handleUpdate(scope.row)">{{ '编辑' }}
+          </el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.row)">{{ '删除' }}
           </el-button>
         </template>
@@ -59,7 +72,7 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @open="beforeDialogOpen" @opened="afterDialogOpen">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @open="beforeDialogOpen" @opened="afterDialogOpen" @close="beforeDialogClose" >
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 80%; margin-left:50px;">
         <el-form-item label="ID" prop="id">
           <el-input v-model="temp.id" :disabled="true" />
@@ -105,10 +118,13 @@
         </el-row>
         <!-- <el-row>
           <div id="waveform" />
-        </el-row>
-        <el-row>
-          <audio src="/static/sound/test-1.mp3" controls />
         </el-row> -->
+        <!-- <el-row>
+          <audio :src="temp.sound" controls />
+        </el-row> -->
+        <el-form-item label="音频">
+          <audio ref="sound" :src="temp.sound | mediaFilter" controls/>
+        </el-form-item>
         <el-form-item label="故障信息">
           <el-input
             v-model="temp.faultInfo"
@@ -145,106 +161,22 @@
         <el-button :loading="downloadLoading" type="success" plain icon="el-icon-download" @click="handleExport">导出</el-button>
       </el-row>
     </el-dialog>
+
+    <!-- 上传 Excel -->
+    <el-dialog :visible.sync="uploadDialogVisible" title="上传 Excel">
+      <upload-excel-component :on-success="handleUploadSuccess" :before-upload="beforeUpload" />
+      <el-button :disabled="tableData.length===0" :type="postBtnType" :loading="posting" style="margin: 20px auto 0; display: block" plain @click="handleUpload" >{{ postText }}</el-button>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
-import { fetchRepairationList, updateRepairation, deleteRepairation } from '@/api/order'
+import { fetchRepairationList, updateRepairation, deleteRepairation, addRepairation } from '@/api/order'
+import UploadExcelComponent from '@/components/UploadExcel'
 import waves from '@/directive/waves' // Waves directive
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-
-// 订单结构
-const ORDER = {
-  ID: {
-    name: 'ID',
-    value: 'id',
-    search: true,
-    export: true,
-    editable: true,
-  },
-  // USERNAME: {
-  //   name: '用户名',
-  //   value: 'username',
-  //   search: true,
-  //   export: true,
-  //   editable: true,
-  // },
-  // REPAIRNAME: {
-  //   name: '维修员',
-  //   value: 'repairName',
-  //   search: true,
-  //   export: true,
-  //   editable: true,
-  // },
-  USERID: {
-    name: '用户ID',
-    value: 'userId',
-    search: true,
-    export: true,
-    editable: true,
-  },
-  REPAIRID: {
-    name: '维修员ID',
-    value: 'repairId',
-    search: true,
-    export: true,
-    editable: true,
-  },
-  EQUIPINFO: {
-    name: '设备信息',
-    value: 'equipInfo',
-    search: false,
-    export: true,
-    editable: true,
-  },
-  FAULTINFO: {
-    name: '故障信息',
-    value: 'faultInfo',
-    search: true,
-    export: true,
-    editable: true,
-  },
-  SOUND: {
-    name: '录音',
-    value: 'sound',
-    search: false,
-    export: false,
-    editable: false,
-  },
-  IMG: {
-    name: '图片',
-    value: 'img',
-    search: false,
-    export: false,
-    editable: false,
-  },
-  STATUS: {
-    name: '状态',
-    value: 'status',
-    search: false,
-    export: true,
-    editable: true,
-  },
-}
-
-const STATUS = {
-  UNDO: {
-    name: '报修等待',
-    value: '报修等待',
-  },
-  CONFIRM: {
-    name: '报修确认',
-    value: '报修确认',
-  },
-  DOING: {
-    name: '维修处理',
-    value: '维修处理',
-  },
-  DONE: {
-    name: '处理完毕',
-    value: '处理完毕',
-  },
-}
+import ORDER, { STATUS } from '@/utils/order';
 
 // 生成查询选项
 const queryType = Object.values(ORDER).filter(item => item.search);
@@ -253,7 +185,7 @@ const statusType = Object.values(STATUS);
 
 export default {
   name: 'OrderTable',
-  components: { Pagination },
+  components: { Pagination, UploadExcelComponent },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -276,7 +208,10 @@ export default {
     },
     imgFilter(src) {
       return `/media/${src}`;
-    }
+    },
+    mediaFilter(src) {
+      return `/media/${src}`;
+    },
   },
   data() {
     return {
@@ -296,7 +231,7 @@ export default {
       importanceOptions: [1, 2, 3],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
-      showDelete: false,
+      showEdit: false,
       temp: {
         id: undefined,
         importance: 1,
@@ -323,7 +258,25 @@ export default {
       downloadLoading: false,
       exportDialogVisible: false,
       exportPage: undefined,
+      uploadDialogVisible: false,
+      uploadDisable: true,
+      // 上传 Excel 相关
+      tableData: [],
+      tableHeader: [],
+      postData: [],
+      uploadDone: false,
+      postDone: false,
+      posting: false,
+      ORDER,
     }
+  },
+  computed: {
+    postText() {
+      return this.postDone ? '上传完成' : '上传';
+    },
+    postBtnType() {
+      return this.postDone ? 'success' : 'primary';
+    },
   },
   created() {
     this.getList()
@@ -459,7 +412,7 @@ export default {
 
       // 并发请求
       const fetchingList = new Array(this.exportPage).fill(0).map((v, i) => {
-        return fetchRepairationList(Object.assign(this.listQuery, { page: i })).then(data => {
+        return fetchRepairationList({ ...this.listQuery, page: i + 1 }).then(data => {
           exportData = exportData.concat(data.list);
         })
       });
@@ -490,7 +443,6 @@ export default {
       }))
     },
     beforeDialogOpen() {
-      // console.log('Dialog is openning');
 
       // setTimeout(() => {
       //   const wavesurfer = window.WaveSurfer.create({
@@ -511,6 +463,67 @@ export default {
       // });
       // console.log('isLoading');
       // wavesurfer.load('/static/sound/test-1.mp3');
+    },
+    beforeDialogClose() {
+      // 音频暂停
+      this.$refs.sound.pause();
+    },
+
+    // 上传 Excel 相关
+    beforeUpload(file) {
+      const isLt1M = file.size / 1024 / 1024 < 1
+
+      if (isLt1M) {
+        return true
+      }
+
+      this.$message({
+        message: '不要选择大于 1M 的文件',
+        type: 'warning'
+      })
+      return false
+    },
+    handleUploadSuccess({ results, header }) {
+      this.tableData = results
+      this.tableHeader = header
+      this.dataFilter();
+
+      this.posting = false;
+      this.postDone = false;
+    },
+    dataFilter() {
+      const temp = this.tableData.map((row, i) => {
+        const o = {};
+        Object.values(ORDER).map(v => {
+          if (row.hasOwnProperty(v.name)) {
+            o[v.value] = row[v.name];
+          }
+        });
+        return o;
+      })
+
+      this.postData = temp;
+      console.log(this.postData);
+    },
+    handleUpload() {
+      if (this.postDone) {
+        return;
+      }
+
+      this.posting = true;
+      const requestList = this.postData.map(v => {
+        return addRepairation(v).catch(e => console.error(e));
+      });
+
+      Promise.all(requestList).then(() => {
+        this.posting = false;
+        this.postDone = true;
+        // 手动刷新
+        this.getList();
+      });
+    },
+    handleUploadBtn() {
+      this.uploadDialogVisible = true;
     }
   }
 }

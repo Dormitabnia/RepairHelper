@@ -17,12 +17,15 @@ Object.defineProperty(ROLE, 'prop', {
     // },
     [`${ROLE.FIXER}`]: {
       name: '维修员',
+      value: 1,
     },
     [`${ROLE.ORDERER}`]: {
       name: '报修人员',
+      value: 2,
     },
     [`${ROLE.USER}`]: {
       name: '用户',
+      value: 3,
     },
     // [`${ROLE.PENDING}`]: {
     //   name: '待审核',

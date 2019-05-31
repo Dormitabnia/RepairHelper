@@ -1,26 +1,26 @@
 // 订单结构
 const ORDER = {
   ID: {
-    name: 'ID',
+    name: '维修单ID',
     value: 'id',
     search: true,
     export: true,
     editable: true,
   },
-  // USERNAME: {
-  //   name: '用户名',
-  //   value: 'username',
-  //   search: true,
-  //   export: true,
-  //   editable: true,
-  // },
-  // REPAIRNAME: {
-  //   name: '维修员',
-  //   value: 'repairName',
-  //   search: true,
-  //   export: true,
-  //   editable: true,
-  // },
+  USERNAME: {
+    name: '用户名',
+    value: 'submitter',
+    search: false,
+    export: true,
+    editable: true,
+  },
+  REPAIRNAME: {
+    name: '维修员',
+    value: 'repairer',
+    search: false,
+    export: true,
+    editable: true,
+  },
   USERID: {
     name: '用户ID',
     value: 'userId',
@@ -40,7 +40,7 @@ const ORDER = {
     value: 'equipInfo',
     search: false,
     export: true,
-    editable: false,
+    editable: true,
   },
   FAULTINFO: {
     name: '故障信息',
@@ -53,14 +53,14 @@ const ORDER = {
     name: '录音',
     value: 'sound',
     search: false,
-    export: false,
+    export: true,
     editable: false,
   },
   IMG: {
     name: '图片',
     value: 'img',
     search: false,
-    export: false,
+    export: true,
     editable: false,
   },
   STATUS: {
@@ -72,18 +72,37 @@ const ORDER = {
   },
 };
 
+// const STATUS = {
+//   UNDO: {
+//     name: '未处理',
+//     value: '未处理',
+//   },
+//   DOING: {
+//     name: '处理中',
+//     value: '处理中',
+//   },
+//   DONE: {
+//     name: '已处理',
+//     value: '已处理',
+//   },
+// }
+
 const STATUS = {
   UNDO: {
-    name: '未处理',
-    value: '未处理',
+    name: '报修等待',
+    value: '报修等待',
+  },
+  CONFIRM: {
+    name: '报修确认',
+    value: '报修确认',
   },
   DOING: {
-    name: '处理中',
-    value: '处理中',
+    name: '维修处理',
+    value: '维修处理',
   },
   DONE: {
-    name: '已处理',
-    value: '已处理',
+    name: '处理完毕',
+    value: '处理完毕',
   },
 }
 

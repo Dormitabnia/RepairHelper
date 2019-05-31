@@ -1,6 +1,8 @@
 import { loginByUsername, logout, getUserInfo } from '@/api/login'
 // import { getToken, setToken, removeToken } from '@/utils/auth'
 import { getToken, setToken, removeToken } from '@/utils/tokenStorage'
+import { getName, setName } from '@/utils/nameStorage'
+import { MessageBox } from 'element-ui';
 // import { parseJwt } from '@/utils/jwt'
 
 const user = {
@@ -10,7 +12,7 @@ const user = {
     code: '',
     token: getToken(),
     // name: getToken() ? parseJwt(getToken()).name : 'Root',
-    name: 'Root',
+    name: getName() || 'Root',
     avatar: '',
     introduction: '',
     roles: [],
@@ -36,6 +38,7 @@ const user = {
       state.status = status
     },
     SET_NAME: (state, name) => {
+      setName(name);
       state.name = name
     },
     SET_AVATAR: (state, avatar) => {
@@ -52,12 +55,14 @@ const user = {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
         loginByUsername(username, userInfo.password).then(data => {
-          // const data = response.data
           // 设置 Token
           if (data) {
             commit('SET_TOKEN', data)
             setToken(data)
           }
+
+          // 设置名字
+          commit('SET_NAME', username)
 
           // const jwtPayload = parseJwt(data.token);
           // console.log(jwtPayload);
@@ -129,10 +134,8 @@ const user = {
 
     // 登出
     LogOut({ dispatch, commit, state }) {
-      // fed logout
-      dispatch('FedLogOut');
-
-      return new Promise((resolve, reject) => {
+      // 超时强制退出
+      const logoutReq = new Promise((resolve, reject) => {
         logout(state.name).then(() => {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
@@ -141,6 +144,31 @@ const user = {
         }).catch(error => {
           reject(error)
         })
+      });
+
+      let timer;
+      const timeoutPromise = new Promise((resolve, reject) => {
+        timer = setTimeout(() => {
+          reject(Promise.reject(new Error('请求超时')));
+        }, 2000);
+      });
+
+      return Promise.race([logoutReq, timeoutPromise]).catch(err => {
+        // 退出登录请求失败 或 超时
+        // 弹出 强制退出 框
+        console.log('退出登录失败');
+        clearTimeout(timer);
+        MessageBox.confirm('是否强制退出？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          commit('SET_TOKEN', '')
+          commit('SET_ROLES', [])
+          removeToken()
+        })
+
+        return Promise.reject(err);
       })
     },
 

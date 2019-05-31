@@ -32,6 +32,14 @@ export function deleteUser(id) {
   });
 }
 
+export function addUser(data) {
+  return request({
+    url: '/userInfo',
+    method: 'post',
+    data,
+  });
+}
+
 export function addAdmin({ username, password }) {
   return request({
     url: '/admin',

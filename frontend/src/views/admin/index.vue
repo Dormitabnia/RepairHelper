@@ -11,7 +11,8 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">添加</el-button>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">{{ $t('table.export') }}</el-button>
-      <el-checkbox v-model="showDelete" class="filter-item red-check" style="margin-left:15px;" @change="tableKey=tableKey+1">{{ '删除' }}</el-checkbox>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-upload" @click="handleUploadBtn">导入</el-button>
+      <el-checkbox v-model="showEdit" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">编辑</el-checkbox>
     </div>
 
     <el-table
@@ -23,33 +24,35 @@
       highlight-current-row
       stripe
       style="width: 100%;">
-      <el-table-column :label="tableCol.ID.name" align="center" width="100">
+      <el-table-column :label="ADMIN.ID.name" align="center" width="100">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="tableCol.USERNAME.name" align="center">
+      <el-table-column :label="ADMIN.USERNAME.name" align="center">
         <template slot-scope="scope">
           <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.username }}</span>
         </template>
       </el-table-column>
-      <!-- <el-table-column :label="tableCol.COMPANY.name" align="center">
+      <!-- <el-table-column :label="ADMIN.COMPANY.name" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.company }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="tableCol.PHONE.name" width="200" align="center">
+      <el-table-column :label="ADMIN.PHONE.name" width="200" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.phone }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column :label="tableCol.AUTHORITY.name" class-name="status-col" width="150">
+      <el-table-column :label="ADMIN.AUTHORITY.name" class-name="status-col" width="150">
         <template slot-scope="scope">
           <el-tag :type="adminTag">{{ adminName }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="showDelete" label="操作" width="110px" align="center">
+      <el-table-column v-if="showEdit" label="操作" width="160px" align="center">
         <template slot-scope="scope">
+          <el-button size="mini" type="primary" @click="handleUpdate(scope.row)">{{ '编辑' }}
+          </el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.row)">{{ '删除' }}
           </el-button>
         </template>
@@ -60,13 +63,13 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 80%; margin-left:50px;">
-        <el-form-item :label="tableCol.ID.name" prop="id">
+        <el-form-item :label="ADMIN.ID.name" prop="id">
           <el-input v-model="temp.id" :disabled="true" />
         </el-form-item>
-        <el-form-item :label="tableCol.USERNAME.name" prop="username">
+        <el-form-item :label="ADMIN.USERNAME.name" prop="username">
           <el-input v-model="temp.username" />
         </el-form-item>
-        <el-form-item :label="tableCol.PASSWORD.name" prop="password">
+        <el-form-item :label="ADMIN.PASSWORD.name" prop="password">
           <el-input v-model="temp.password" type="password" />
         </el-form-item>
       </el-form>
@@ -112,6 +115,13 @@
         <el-button :loading="downloadLoading" type="success" plain icon="el-icon-download" @click="handleExport">导出</el-button>
       </el-row>
     </el-dialog>
+
+    <!-- 上传 Excel -->
+    <el-dialog :visible.sync="uploadDialogVisible" title="上传 Excel">
+      <upload-excel-component :on-success="handleUploadSuccess" :before-upload="beforeUpload" />
+      <el-button :disabled="tableData.length===0" :type="postBtnType" :loading="posting" style="margin: 20px auto 0; display: block" plain @click="handleUpload">{{ postText }}</el-button>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -120,40 +130,43 @@ import { fetchAdminList, updateAdminInfo, deleteAdmin, addAdmin } from '@/api/ad
 import waves from '@/directive/waves' // Waves directive
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import ROLE from '@/utils/role'
+import ADMIN from '@/utils/admin';
+import UploadExcelComponent from '@/components/UploadExcel'
 
 const userType = Object.values(ROLE);
 
 // 表格头
-const tableCol = {
-  ID: {
-    name: 'ID',
-    value: 'id',
-  },
-  USERNAME: {
-    name: '用户名',
-    value: 'username',
-  },
-};
-Object.defineProperty(tableCol, 'PASSWORD', {
-  value: {
-    name: '密码',
-    value: 'password',
-  },
-  enumerable: false,
-});
-Object.defineProperty(tableCol, 'AUTHORITY', {
-  value: {
-    name: '用户类型',
-    value: 'authority',
-  },
-  enumerable: false,
-});
+// const tableCol = {
+//   ID: {
+//     name: 'ID',
+//     value: 'id',
+//   },
+//   USERNAME: {
+//     name: '用户名',
+//     value: 'username',
+//   },
+// };
+// Object.defineProperty(tableCol, 'PASSWORD', {
+//   value: {
+//     name: '密码',
+//     value: 'password',
+//   },
+//   enumerable: false,
+// });
+// Object.defineProperty(tableCol, 'AUTHORITY', {
+//   value: {
+//     name: '用户类型',
+//     value: 'authority',
+//   },
+//   enumerable: false,
+// });
 
-const queryType = Object.values(tableCol);
+// const queryType = Object.values(tableCol);
+const queryType = Object.values(ADMIN).filter(v => v.search);
 
 export default {
   name: 'AdminTable',
-  components: { Pagination },
+  components: { Pagination, UploadExcelComponent },
   directives: { waves },
   data() {
     return {
@@ -168,9 +181,9 @@ export default {
         qt: '',
       },
       userType,
-      tableCol,
+      ADMIN,
       queryType,
-      showDelete: false,
+      showEdit: false,
       temp: {
         id: undefined,
         name: '',
@@ -197,7 +210,25 @@ export default {
       dialogCreateVisible: false,
       adminTag: 'danger',
       adminName: '管理员',
+
+      uploadDialogVisible: false,
+      uploadDisable: true,
+      // 上传 Excel 相关
+      tableData: [],
+      tableHeader: [],
+      postData: [],
+      uploadDone: false,
+      postDone: false,
+      posting: false,
     }
+  },
+  computed: {
+    postText() {
+      return this.postDone ? '上传完成' : '上传';
+    },
+    postBtnType() {
+      return this.postDone ? 'success' : 'primary';
+    },
   },
   created() {
     this.getList()
@@ -266,6 +297,9 @@ export default {
                 type: 'success',
                 duration: 1500,
               })
+
+              // 刷新列表
+              this.getList();
             })
           }
         })
@@ -346,20 +380,21 @@ export default {
     handleExport() {
       this.downloadLoading = true;
       let exportData = [];
-      const tHeader = [];
-      const filterVal = [];
 
       // 构造表头
-      for (const k in this.tableCol) {
-        tHeader.push(this.tableCol[k].name);
-        filterVal.push(this.tableCol[k].value);
-      }
-      tHeader.push(this.tableCol.PASSWORD.name);
-      filterVal.push(this.tableCol.PASSWORD.value);
+      const tHeader = Object.values(ADMIN).filter(item => item.export).map(v => v.name);
+      const filterVal = Object.values(ADMIN).filter(item => item.export).map(v => v.value);
+
+      // for (const k in this.tableCol) {
+      //   tHeader.push(this.tableCol[k].name);
+      //   filterVal.push(this.tableCol[k].value);
+      // }
+      // tHeader.push(this.tableCol.PASSWORD.name);
+      // filterVal.push(this.tableCol.PASSWORD.value);
 
       // 并发请求
       const fetchingList = new Array(this.exportPage).fill(0).map((v, i) => {
-        return fetchAdminList(Object.assign(this.listQuery, { page: i })).then(data => {
+        return fetchAdminList(Object.assign({}, this.listQuery, { page: i + 1 })).then(data => {
           exportData = exportData.concat(data.list);
         })
       });
@@ -385,6 +420,63 @@ export default {
         return v[j];
       }))
     },
+
+    // 上传 Excel 相关
+    beforeUpload(file) {
+      const isLt1M = file.size / 1024 / 1024 < 1
+
+      if (isLt1M) {
+        return true
+      }
+
+      this.$message({
+        message: '不要选择大于 1M 的文件',
+        type: 'warning'
+      })
+      return false
+    },
+    handleUploadSuccess({ results, header }) {
+      this.tableData = results
+      this.tableHeader = header
+      this.dataFilter();
+
+      this.posting = false;
+      this.postDone = false;
+    },
+    dataFilter() {
+      const temp = this.tableData.map((row, i) => {
+        const o = {};
+        Object.values(ADMIN).map(v => {
+          if (row.hasOwnProperty(v.name)) {
+            o[v.value] = row[v.name];
+          }
+        });
+        return o;
+      })
+
+      this.postData = temp;
+      console.log(this.postData);
+    },
+    handleUpload() {
+      if (this.postDone) {
+        return;
+      }
+
+      this.posting = true;
+      const requestList = this.postData.map(v => {
+        return addAdmin(v).catch(e => console.error(e));
+      });
+
+      Promise.all(requestList).then(() => {
+        this.posting = false;
+        this.postDone = true;
+        // 手动刷新
+        this.getList();
+      });
+    },
+    handleUploadBtn() {
+      this.uploadDialogVisible = true;
+    }
   }
 }
 </script>

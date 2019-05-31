@@ -82,7 +82,7 @@ export const constantRouterMap = [
         component: () => import('@/views/order/OrderTable'),
         name: 'OrderTable',
         meta: {
-          title: '订单信息',
+          title: '维修信息',
           icon: 'table',
         }
       }
@@ -141,21 +141,21 @@ export const constantRouterMap = [
   },
 
   // Upload Excel View
-  {
-    path: '/uploadExcel',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/uploadExcel'),
-        name: 'UploadExcel',
-        meta: {
-          title: '上传 Excel',
-          icon: 'excel',
-        }
-      }
-    ]
-  },
+  // {
+  //   path: '/uploadExcel',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/uploadExcel'),
+  //       name: 'UploadExcel',
+  //       meta: {
+  //         title: '上传 Excel',
+  //         icon: 'excel',
+  //       }
+  //     }
+  //   ]
+  // },
 
   // {
   //   path: '/guide',
