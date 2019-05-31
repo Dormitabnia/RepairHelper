@@ -40,6 +40,7 @@ const webpackConfig = merge(baseWebpackConfig, {
   externals: {
     'vue': 'Vue',
     'element-ui': 'ELEMENT',
+    'xlsx': 'XLSX',
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
