@@ -84,33 +84,6 @@ public class UserController extends BaseRestController {
     }
 
     /*
-    新增用户
-     */
-//    @RequestMapping(method = RequestMethod.POST, value = "/auth")
-//    public String addUser(@RequestParam("code") String code) {
-//        if (code.isEmpty())
-//            return JsonUtil.failure("code为空，用户未授权");
-//
-//        //通过code获取用户session
-//        Map map = TokenUtil.getSessionByJsCode(code);
-//
-//
-//        if (map != null && map.containsKey("openid") && map.containsKey("session_key")) {
-//
-//            String token = TokenUtil.createToken(map.get("openid").toString());
-//
-//            Authentication authentication = new Authentication();
-//            authentication.setOpenid(map.get("openid").toString());
-//            authentication.setSession_key(map.get("session_key").toString());
-//
-//            return JsonUtil.success("用户创建成功", token);
-//
-//        }
-//
-//        return JsonUtil.failure("请求微信授权信息失败");
-//    }
-
-    /*
     修改当前用户信息
      */
     @LoginRequired
@@ -143,12 +116,6 @@ public class UserController extends BaseRestController {
                 return JsonUtil.success("修改成功");
         }
 
-//        BUserController nUser = new BUserController();
-//        nUser.setId(sUser.getId());
-//        nUser.setName((String)user.get("name"));
-//        nUser.setPhone((String)user.get("phone"));
-//        nUser.setCompany((String)user.get("company"));
-
         return JsonUtil.failure("提交的数据类型不正确");
     }
 
@@ -161,13 +128,5 @@ public class UserController extends BaseRestController {
         int userType = getSessionUser().getAuthority();
         return JsonUtil.success("Query success", userType);
     }
-
-    /*
-    删除用户信息
-     */
-//    @RequestMapping(method = RequestMethod.DELETE, value = "/userInfo")
-//    public boolean deleteUserInfo(@RequestParam int id) {
-//        return userService.deleteUserById(id);
-//    }
 
 }

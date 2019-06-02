@@ -23,13 +23,7 @@ public class BUserController {
     private static final Logger logger = LoggerFactory.getLogger(BUserController.class);
 
     @Autowired
-    AdministratorService administratorService;
-
-    @Autowired
     UserService userService;
-
-    @Autowired
-    TokenUtil tokenUtil;
 
     @Autowired
     EntityExampleService entityExampleService;
@@ -72,33 +66,6 @@ public class BUserController {
             return JsonUtil.failure("查找失败");
 
         }
-
-//        if (qt.isEmpty() && q.isEmpty())
-//            userList = userService.getUserList();
-//        else if (qt == "id") {
-//            userList = new ArrayList<>();
-//            userList.add(userService.getUserById(Integer.parseInt(q)));
-//        }
-//        else {
-//            try {
-//                Class cl = User.class;
-//                Field field = cl.getDeclaredField(qt);
-//                String fieldType = field.getGenericType().toString();
-//
-//                userList = userService.getUsersLike(qt, q, fieldType.equals("class java.lang.String"));
-//            } catch (NoSuchMethodException e) {
-//                return JsonUtil.failure("非法字段");
-//            } catch (Exception e) {
-//                return JsonUtil.failure("查找失败");
-//            }
-//        }
-//
-//        for (int i = 0; i < userList.size(); i++) {
-//            if (userList.get(i).getAuthority() != f) {
-//                userList.remove(i);
-//                i--;
-//            }
-//        }
 
         PageInfo res = new PageInfo(userList);
 
